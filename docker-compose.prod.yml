@@ -1,0 +1,52 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: docker/production/Dockerfile
+      args:
+        USER_ID: ${USER_ID:-9999}
+        GROUP_ID: ${GROUP_ID:-9999}
+        SERVERSIDEUP_PHP_VERSION: ${PHP_VERSION:-8.4-fpm-nginx-alpine}
+        POSTGRES_VERSION: ${POSTGRES_VERSION:-17}
+    restart: unless-stopped
+    ports:
+      - '8080:8080'
+    env_file:
+      - .env.production
+    volumes:
+      - storage:/var/www/html/storage
+    networks:
+      - peeper-network
+    depends_on:
+      - db
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://localhost:8080/healthcheck']
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+  db:
+    image: postgres:${POSTGRES_VERSION:-17}-alpine
+    restart: always
+    shm_size: 128mb
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_PASSWORD: test
+      POSTGRES_USER: postgres
+      POSTGRES_DB: postgres
+    ports:
+      - 5432:5432
+    networks:
+      - peeper-network
+
+volumes:
+  postgres_data:
+  storage:
+
+networks:
+  peeper-network:
+    driver: bridge
