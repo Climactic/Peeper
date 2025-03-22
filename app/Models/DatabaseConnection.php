@@ -2,9 +2,9 @@
 
 namespace App\Models;
 
+use App\Concerns\HasUlid;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use App\Concerns\HasUlid;
 
 class DatabaseConnection extends Model
 {

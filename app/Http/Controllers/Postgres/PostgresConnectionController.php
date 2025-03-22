@@ -2,13 +2,13 @@
 
 namespace App\Http\Controllers\Postgres;
 
+use App\Http\Controllers\Controller;
 use App\Models\DatabaseConnection;
-use App\Services\Databases\PostgresService;
 use App\Services\Databases\PostgresConnectionManager;
+use App\Services\Databases\PostgresService;
+use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
-use Illuminate\Database\QueryException;
-use App\Http\Controllers\Controller;
 
 class PostgresConnectionController extends Controller
 {
@@ -29,8 +29,6 @@ class PostgresConnectionController extends Controller
     /**
      * Create a new controller instance.
      *
-     * @param PostgresService $postgresService
-     * @param PostgresConnectionManager $connectionManager
      * @return void
      */
     public function __construct(
@@ -53,14 +51,13 @@ class PostgresConnectionController extends Controller
             ->get();
 
         return Inertia::render('postgres/postgres', [
-            'connections' => $connections
+            'connections' => $connections,
         ]);
     }
 
     /**
      * Test a PostgreSQL connection.
      *
-     * @param Request $request
      * @return \Illuminate\Http\JsonResponse
      */
     public function testConnection(Request $request)
@@ -76,6 +73,7 @@ class PostgresConnectionController extends Controller
         try {
             $credentials = $request->only(['host', 'port', 'username', 'password', 'database']);
             $success = $this->connectionManager->testConnection($credentials);
+
             return response()->json(['success' => $success]);
         } catch (QueryException $e) {
             return response()->json(['success' => false, 'error' => $e->getMessage()]);
@@ -85,7 +83,6 @@ class PostgresConnectionController extends Controller
     /**
      * Store a new PostgreSQL connection.
      *
-     * @param Request $request
      * @return \Illuminate\Http\RedirectResponse
      */
     public function store(Request $request)
@@ -118,8 +115,6 @@ class PostgresConnectionController extends Controller
     /**
      * Display the database explorer for a specific connection.
      *
-     * @param DatabaseConnection $connection
-     * @param Request $request
      * @return \Inertia\Response
      */
     public function explore(DatabaseConnection $connection, Request $request)
@@ -148,9 +143,7 @@ class PostgresConnectionController extends Controller
     /**
      * Get schemas for a specific database.
      *
-     * @param Request $request
-     * @param DatabaseConnection $connection
-     * @param string $database
+     * @param  string  $database
      * @return \Illuminate\Http\JsonResponse
      */
     public function getSchemas(Request $request, DatabaseConnection $connection, $database)
@@ -162,6 +155,7 @@ class PostgresConnectionController extends Controller
 
         try {
             $schemas = $this->postgresService->getSchemas($connection, $database);
+
             return response()->json($schemas);
         } catch (QueryException $e) {
             return response()->json(['message' => $e->getMessage()], 500);
@@ -171,9 +165,7 @@ class PostgresConnectionController extends Controller
     /**
      * Get tables for a specific database.
      *
-     * @param Request $request
-     * @param DatabaseConnection $connection
-     * @param string $database
+     * @param  string  $database
      * @return \Illuminate\Http\JsonResponse
      */
     public function getTables(Request $request, DatabaseConnection $connection, $database)
@@ -185,6 +177,7 @@ class PostgresConnectionController extends Controller
 
         try {
             $tables = $this->postgresService->getTables($connection, $database);
+
             return response()->json($tables);
         } catch (QueryException $e) {
             return response()->json(['message' => $e->getMessage()], 500);
@@ -194,10 +187,8 @@ class PostgresConnectionController extends Controller
     /**
      * Get columns for a specific table.
      *
-     * @param Request $request
-     * @param DatabaseConnection $connection
-     * @param string $database
-     * @param string $table
+     * @param  string  $database
+     * @param  string  $table
      * @return \Illuminate\Http\JsonResponse
      */
     public function getColumns(Request $request, DatabaseConnection $connection, $database, $table)
@@ -211,6 +202,7 @@ class PostgresConnectionController extends Controller
 
         try {
             $columns = $this->postgresService->getTableColumns($connection, $table, $database, $schema);
+
             return response()->json($columns);
         } catch (QueryException $e) {
             return response()->json(['message' => $e->getMessage()], 500);
@@ -220,10 +212,8 @@ class PostgresConnectionController extends Controller
     /**
      * Get data for a specific table with pagination.
      *
-     * @param Request $request
-     * @param DatabaseConnection $connection
-     * @param string $database
-     * @param string $table
+     * @param  string  $database
+     * @param  string  $table
      * @return \Illuminate\Http\JsonResponse
      */
     public function getTableData(Request $request, DatabaseConnection $connection, $database, $table)
@@ -266,8 +256,6 @@ class PostgresConnectionController extends Controller
     /**
      * Insert a new row into a table.
      *
-     * @param Request $request
-     * @param DatabaseConnection $connection
      * @return \Illuminate\Http\JsonResponse
      */
     public function insertRow(Request $request, DatabaseConnection $connection)
@@ -309,8 +297,7 @@ class PostgresConnectionController extends Controller
     /**
      * Process and validate input filters.
      *
-     * @param mixed $rawFilters
-     * @return array
+     * @param  mixed  $rawFilters
      */
     private function processFilters($rawFilters): array
     {
@@ -331,7 +318,7 @@ class PostgresConnectionController extends Controller
         $validFilters = [];
         foreach ($filters as $filter) {
             // Ensure each filter has required properties
-            if (!isset($filter['column']) || !isset($filter['operator'])) {
+            if (! isset($filter['column']) || ! isset($filter['operator'])) {
                 continue;
             }
 
@@ -352,10 +339,10 @@ class PostgresConnectionController extends Controller
                 'in',
                 'not_in',
                 'is_null',
-                'is_not_null'
+                'is_not_null',
             ];
 
-            if (!in_array($filter['operator'], $allowedOperators)) {
+            if (! in_array($filter['operator'], $allowedOperators)) {
                 continue;
             }
 
@@ -364,7 +351,7 @@ class PostgresConnectionController extends Controller
                 // These operators don't need values
                 $validFilters[] = [
                     'column' => $filter['column'],
-                    'operator' => $filter['operator']
+                    'operator' => $filter['operator'],
                 ];
             } elseif (in_array($filter['operator'], ['between', 'not_between'])) {
                 // Between operators need array values with exactly 2 items
@@ -373,7 +360,7 @@ class PostgresConnectionController extends Controller
                 }
             } elseif (in_array($filter['operator'], ['in', 'not_in'])) {
                 // In operators need array values
-                if (isset($filter['value']) && is_array($filter['value']) && !empty($filter['value'])) {
+                if (isset($filter['value']) && is_array($filter['value']) && ! empty($filter['value'])) {
                     $validFilters[] = $filter;
                 }
             } else {
@@ -390,8 +377,7 @@ class PostgresConnectionController extends Controller
     /**
      * Process and validate sorting options.
      *
-     * @param mixed $rawSorting
-     * @return array
+     * @param  mixed  $rawSorting
      */
     private function processSorting($rawSorting): array
     {
@@ -412,18 +398,18 @@ class PostgresConnectionController extends Controller
         $validSorting = [];
         foreach ($sorting as $sort) {
             // Ensure each sort option has required properties
-            if (!isset($sort['column']) || !isset($sort['direction'])) {
+            if (! isset($sort['column']) || ! isset($sort['direction'])) {
                 continue;
             }
 
             // Validate direction is either asc or desc
-            if (!in_array(strtolower($sort['direction']), ['asc', 'desc'])) {
+            if (! in_array(strtolower($sort['direction']), ['asc', 'desc'])) {
                 continue;
             }
 
             $validSorting[] = [
                 'column' => $sort['column'],
-                'direction' => strtolower($sort['direction'])
+                'direction' => strtolower($sort['direction']),
             ];
         }
 

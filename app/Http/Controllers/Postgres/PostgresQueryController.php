@@ -2,14 +2,14 @@
 
 namespace App\Http\Controllers\Postgres;
 
+use App\Http\Controllers\Controller;
 use App\Models\DatabaseConnection;
 use App\Models\DatabaseQuery;
 use App\Services\Databases\PostgresService;
 use App\Traits\DatabaseQueryHelper;
+use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use App\Http\Controllers\Controller;
-use Illuminate\Database\QueryException;
 
 class PostgresQueryController extends Controller
 {
@@ -22,8 +22,6 @@ class PostgresQueryController extends Controller
 
     /**
      * Create a new controller instance.
-     *
-     * @param PostgresService $postgresService
      */
     public function __construct(PostgresService $postgresService)
     {
@@ -33,8 +31,6 @@ class PostgresQueryController extends Controller
     /**
      * Get query history for a specific database connection.
      *
-     * @param Request $request
-     * @param DatabaseConnection $connection
      * @return \Illuminate\Http\JsonResponse
      */
     public function list(Request $request, DatabaseConnection $connection)
@@ -55,7 +51,6 @@ class PostgresQueryController extends Controller
     /**
      * Execute a custom SQL query for a PostgreSQL database.
      *
-     * @param Request $request
      * @return \Illuminate\Http\JsonResponse
      */
     public function executeQuery(Request $request)
@@ -123,7 +118,7 @@ class PostgresQueryController extends Controller
             }
 
             if (preg_match('/Position:\s*(\d+)/i', $errorMessage, $matches)) {
-                $position = (int)$matches[1];
+                $position = (int) $matches[1];
             }
 
             return response()->json([
@@ -134,13 +129,13 @@ class PostgresQueryController extends Controller
                 'detail' => $detail,
                 'hint' => $hint,
                 'position' => $position,
-                'query' => $request->input('query')
+                'query' => $request->input('query'),
             ], 400);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'error' => 'An error occurred: ' . $e->getMessage(),
-                'query' => $request->input('query')
+                'error' => 'An error occurred: '.$e->getMessage(),
+                'query' => $request->input('query'),
             ], 500);
         }
     }
@@ -148,9 +143,7 @@ class PostgresQueryController extends Controller
     /**
      * Get query history for a specific database connection
      *
-     * @param Request $request
-     * @param DatabaseConnection $connection
-     * @param string $database
+     * @param  string  $database
      * @return \Illuminate\Http\JsonResponse
      */
     public function getQueryHistory(Request $request, DatabaseConnection $connection, $database)

@@ -11,8 +11,6 @@ class PostgresQueryBuilder
 
     /**
      * Get the default queries from config.
-     *
-     * @return array
      */
     public function getDefaultQueries(): array
     {
@@ -22,18 +20,16 @@ class PostgresQueryBuilder
     /**
      * Get a specific default query by type.
      *
-     * @param string $type
-     * @return array|null
+     * @param  string  $type
      */
     public function getDefaultQuery($type): ?array
     {
-        return Config::get("queries.postgres")[$type] ?? null;
+        return Config::get('queries.postgres')[$type] ?? null;
     }
 
     /**
      * Build a SQL WHERE clause from an array of filters.
      *
-     * @param array $filters
      * @return array Returns ['sql' => string, 'bindings' => array]
      */
     public function buildWhereClauseFromFilters(array $filters): array
@@ -131,13 +127,13 @@ class PostgresQueryBuilder
                     }
                     break;
                 case 'in':
-                    if (is_array($value) && !empty($value)) {
+                    if (is_array($value) && ! empty($value)) {
                         $placeholders = implode(', ', array_fill(0, count($value), '?'));
                         $whereConditions[] = "{$column} IN ({$placeholders})";
                         $bindings = array_merge($bindings, $value);
-                    } elseif (!is_array($value) && !empty($value)) {
+                    } elseif (! is_array($value) && ! empty($value)) {
                         $values = array_map('trim', explode(',', $value));
-                        if (!empty($values)) {
+                        if (! empty($values)) {
                             $placeholders = implode(', ', array_fill(0, count($values), '?'));
                             $whereConditions[] = "{$column} IN ({$placeholders})";
                             $bindings = array_merge($bindings, $values);
@@ -145,13 +141,13 @@ class PostgresQueryBuilder
                     }
                     break;
                 case 'not_in':
-                    if (is_array($value) && !empty($value)) {
+                    if (is_array($value) && ! empty($value)) {
                         $placeholders = implode(', ', array_fill(0, count($value), '?'));
                         $whereConditions[] = "{$column} NOT IN ({$placeholders})";
                         $bindings = array_merge($bindings, $value);
-                    } elseif (!is_array($value) && !empty($value)) {
+                    } elseif (! is_array($value) && ! empty($value)) {
                         $values = array_map('trim', explode(',', $value));
-                        if (!empty($values)) {
+                        if (! empty($values)) {
                             $placeholders = implode(', ', array_fill(0, count($values), '?'));
                             $whereConditions[] = "{$column} NOT IN ({$placeholders})";
                             $bindings = array_merge($bindings, $values);
@@ -173,14 +169,13 @@ class PostgresQueryBuilder
 
         return [
             'sql' => implode(' AND ', $whereConditions),
-            'bindings' => $bindings
+            'bindings' => $bindings,
         ];
     }
 
     /**
      * Build an ORDER BY clause from sorting options
      *
-     * @param array $sorting
      * @return array Returns ['sql' => string, 'bindings' => array]
      */
     public function buildOrderByClause(array $sorting): array
@@ -200,7 +195,7 @@ class PostgresQueryBuilder
             $column = $this->sanitizeIdentifier($sort['column']);
             $direction = strtoupper($sort['direction']) === 'DESC' ? 'DESC' : 'ASC';
 
-            if (!empty($column)) {
+            if (! empty($column)) {
                 $orderByClauses[] = "{$column} {$direction}";
             }
         }
@@ -211,7 +206,7 @@ class PostgresQueryBuilder
 
         return [
             'sql' => implode(', ', $orderByClauses),
-            'bindings' => []
+            'bindings' => [],
         ];
     }
 }

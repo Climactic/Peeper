@@ -2,7 +2,6 @@
 
 use App\Http\Controllers\Postgres\PostgresConnectionController;
 use App\Http\Controllers\Postgres\PostgresQueryController;
-
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -34,5 +33,5 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/postgres/{connection:ulid}/{database}/history', [PostgresQueryController::class, 'getQueryHistory'])->name('postgres.query.history');
 });
 
-require __DIR__ . '/settings.php';
-require __DIR__ . '/auth.php';
+require __DIR__.'/settings.php';
+require __DIR__.'/auth.php';

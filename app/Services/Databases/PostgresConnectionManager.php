@@ -10,19 +10,17 @@ class PostgresConnectionManager
     /**
      * Get the connection name for a database connection.
      *
-     * @param int $connectionId
-     * @return string
+     * @param  int  $connectionId
      */
     public function getConnectionName($connectionId): string
     {
-        return 'postgres_' . $connectionId;
+        return 'postgres_'.$connectionId;
     }
 
     /**
      * Configure a dynamic connection based on the DatabaseConnection model.
      *
-     * @param DatabaseConnection $connection
-     * @param string|null $database
+     * @param  string|null  $database
      * @return string The configured connection name
      */
     public function configureConnection(DatabaseConnection $connection, $database = null): string
@@ -31,7 +29,7 @@ class PostgresConnectionManager
 
         // Set up a dynamic connection configuration
         config([
-            'database.connections.' . $connectionName => [
+            'database.connections.'.$connectionName => [
                 'driver' => 'pgsql',
                 'host' => $connection->host,
                 'port' => $connection->port,
@@ -45,7 +43,7 @@ class PostgresConnectionManager
                 'sslcert' => $connection->sslcert,
                 'sslkey' => $connection->sslkey,
                 'sslrootcert' => $connection->sslrootcert,
-            ]
+            ],
         ]);
 
         // Purge the connection to ensure we're using the new configuration
@@ -57,21 +55,20 @@ class PostgresConnectionManager
     /**
      * Get a database connection.
      *
-     * @param DatabaseConnection $connection
-     * @param string|null $database
+     * @param  string|null  $database
      * @return \Illuminate\Database\Connection
      */
     public function getConnection(DatabaseConnection $connection, $database = null)
     {
         $connectionName = $this->configureConnection($connection, $database);
+
         return DB::connection($connectionName);
     }
 
     /**
      * Clean up a database connection to prevent connection leaks.
      *
-     * @param string $connectionUlid
-     * @return void
+     * @param  string  $connectionUlid
      */
     public function cleanupConnection($connectionUlid): void
     {
@@ -82,17 +79,15 @@ class PostgresConnectionManager
     /**
      * Test a PostgreSQL connection.
      *
-     * @param array $credentials
-     * @return bool
      * @throws \Illuminate\Database\QueryException
      */
     public function testConnection(array $credentials): bool
     {
         // Create a unique connection name to avoid collisions
-        $connectionName = 'postgres_test_' . uniqid();
+        $connectionName = 'postgres_test_'.uniqid();
 
         config([
-            'database.connections.' . $connectionName => [
+            'database.connections.'.$connectionName => [
                 'driver' => 'pgsql',
                 'host' => $credentials['host'],
                 'port' => $credentials['port'],
@@ -103,11 +98,12 @@ class PostgresConnectionManager
                 'prefix' => '',
                 'schema' => 'public',
                 'sslmode' => $credentials['sslmode'] ?? 'prefer',
-            ]
+            ],
         ]);
 
         try {
             DB::connection($connectionName)->getPdo();
+
             return true;
         } finally {
             // Always clean up the test connection
@@ -118,9 +114,7 @@ class PostgresConnectionManager
     /**
      * Update connection metadata
      *
-     * @param DatabaseConnection $connection
-     * @param string|null $database
-     * @return array
+     * @param  string|null  $database
      */
     public function updateMetadata(DatabaseConnection $connection, $database = null): array
     {
@@ -134,16 +128,14 @@ class PostgresConnectionManager
     /**
      * Get metadata for a database connection.
      *
-     * @param DatabaseConnection $connection
-     * @param string|null $database
-     * @return array
+     * @param  string|null  $database
      */
     public function getDatabaseMetadata(DatabaseConnection $connection, $database = null): array
     {
         $db = $this->getConnection($connection, $database);
 
         // Get PostgreSQL version
-        $versionInfo = $db->select("SELECT version()");
+        $versionInfo = $db->select('SELECT version()');
 
         // Get server information
         $serverInfo = $db->select("
@@ -158,14 +150,14 @@ class PostgresConnectionManager
         ");
 
         // Get database encoding and collation
-        $dbConfig = $db->select("
+        $dbConfig = $db->select('
             SELECT
                 datname,
                 pg_encoding_to_char(encoding) as encoding,
                 datcollate as collation
             FROM pg_database
             WHERE datname = current_database()
-        ");
+        ');
 
         $metadata = $connection->metadata ?? [];
         $metadata['database'] = $database ?? $connection->database;

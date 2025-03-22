@@ -5,10 +5,10 @@ namespace App\Services\Databases;
 use App\Models\DatabaseConnection;
 use App\Models\DatabaseQuery;
 use App\Traits\DatabaseQueryHelper;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Config;
-use Illuminate\Database\QueryException;
+use Illuminate\Support\Facades\DB;
 
 class PostgresService
 {
@@ -26,9 +26,6 @@ class PostgresService
 
     /**
      * Create a new PostgreSQL service instance.
-     *
-     * @param PostgresConnectionManager $connectionManager
-     * @param PostgresQueryBuilder $queryBuilder
      */
     public function __construct(
         PostgresConnectionManager $connectionManager,
@@ -51,21 +48,21 @@ class PostgresService
     /**
      * Get a specific default query by type.
      *
-     * @param string $type
+     * @param  string  $type
      * @return array|null
      */
     public static function getDefaultQuery($type)
     {
-        return Config::get("queries.postgres")[$type];
+        return Config::get('queries.postgres')[$type];
     }
 
     public function getDatabaseMetadata(DatabaseConnection $connection, $database = null)
     {
-        $connectionName = 'postgres_' . $connection->ulid;
+        $connectionName = 'postgres_'.$connection->ulid;
         $db = DB::connection($connectionName);
 
         // Get PostgreSQL version
-        $versionInfo = $db->select("SELECT version()");
+        $versionInfo = $db->select('SELECT version()');
 
         // Get server information
         $serverInfo = $db->select("
@@ -80,14 +77,14 @@ class PostgresService
         ");
 
         // Get database encoding and collation
-        $dbConfig = $db->select("
+        $dbConfig = $db->select('
             SELECT
                 datname,
                 pg_encoding_to_char(encoding) as encoding,
                 datcollate as collation
             FROM pg_database
             WHERE datname = current_database()
-        ");
+        ');
 
         $metadata = $connection->metadata ?? [];
         $metadata['database'] = $database ?? $connection->database;
@@ -101,16 +98,14 @@ class PostgresService
 
     /**
      * Get all databases for a connection.
-     *
-     * @param DatabaseConnection $connection
-     * @return array
      */
     public function getDatabases(DatabaseConnection $connection): array
     {
         $db = $this->connectionManager->getConnection($connection);
 
         try {
-            $databases = $db->select("SELECT datname FROM pg_database WHERE datistemplate = false ORDER BY datname");
+            $databases = $db->select('SELECT datname FROM pg_database WHERE datistemplate = false ORDER BY datname');
+
             return $databases;
         } finally {
             $this->connectionManager->cleanupConnection($connection->ulid);
@@ -119,17 +114,13 @@ class PostgresService
 
     /**
      * Get all schemas for a connection.
-     *
-     * @param DatabaseConnection $connection
-     * @param string|null $database
-     * @return array
      */
     public function getSchemas(DatabaseConnection $connection, ?string $database = null): array
     {
         $db = $this->connectionManager->getConnection($connection, $database);
 
         try {
-            return $db->select("SELECT schema_name FROM information_schema.schemata ORDER BY schema_name");
+            return $db->select('SELECT schema_name FROM information_schema.schemata ORDER BY schema_name');
         } finally {
             $this->connectionManager->cleanupConnection($connection->ulid);
         }
@@ -137,10 +128,6 @@ class PostgresService
 
     /**
      * Get all tables for a connection.
-     *
-     * @param DatabaseConnection $connection
-     * @param string|null $database
-     * @return array
      */
     public function getTables(DatabaseConnection $connection, ?string $database = null): array
     {
@@ -155,12 +142,6 @@ class PostgresService
 
     /**
      * Get columns for a specific table.
-     *
-     * @param DatabaseConnection $connection
-     * @param string $table
-     * @param string|null $database
-     * @param string $schema
-     * @return array
      */
     public function getTableColumns(DatabaseConnection $connection, string $table, ?string $database = null, string $schema = 'public'): array
     {
@@ -202,16 +183,6 @@ class PostgresService
 
     /**
      * Get data from a specific table with pagination using stored query.
-     *
-     * @param DatabaseConnection $connection
-     * @param string $database
-     * @param string $table
-     * @param int $page
-     * @param int $perPage
-     * @param string $schema
-     * @param array $filters
-     * @param array $sorting
-     * @return array
      */
     public function getTableData(
         DatabaseConnection $connection,
@@ -235,10 +206,10 @@ class PostgresService
             $whereClause = '';
             $filterBindings = [];
 
-            if (!empty($filters)) {
+            if (! empty($filters)) {
                 $filterData = $this->queryBuilder->buildWhereClauseFromFilters($filters);
-                if (!empty($filterData['sql'])) {
-                    $whereClause = " WHERE " . $filterData['sql'];
+                if (! empty($filterData['sql'])) {
+                    $whereClause = ' WHERE '.$filterData['sql'];
                     $filterBindings = $filterData['bindings'];
                 }
             }
@@ -250,13 +221,13 @@ class PostgresService
             $query = str_replace(':offset', $offset, $query);
 
             // Add WHERE clause if filters exist
-            if (!empty($whereClause)) {
+            if (! empty($whereClause)) {
                 // Check if the query already has a WHERE clause
                 if (stripos($query, 'WHERE') === false) {
                     // Insert the WHERE clause before LIMIT
                     $limitPos = stripos($query, 'LIMIT');
                     if ($limitPos !== false) {
-                        $query = substr_replace($query, $whereClause . ' ', $limitPos, 0);
+                        $query = substr_replace($query, $whereClause.' ', $limitPos, 0);
                     } else {
                         $query .= $whereClause;
                     }
@@ -267,25 +238,25 @@ class PostgresService
 
                     if ($limitPos !== false && $wherePos !== false) {
                         $conditions = substr($query, $wherePos + 6, $limitPos - ($wherePos + 6));
-                        $newWhere = " WHERE " . $conditions . " AND " . $filterData['sql'];
+                        $newWhere = ' WHERE '.$conditions.' AND '.$filterData['sql'];
                         $query = substr_replace($query, $newWhere, $wherePos, $limitPos - $wherePos);
                     }
                 }
             }
 
             // Add ORDER BY clause if sorting is provided
-            if (!empty($sorting)) {
+            if (! empty($sorting)) {
                 $orderByData = $this->queryBuilder->buildOrderByClause($sorting);
 
-                if (!empty($orderByData['sql'])) {
-                    $orderByClause = " ORDER BY " . $orderByData['sql'];
+                if (! empty($orderByData['sql'])) {
+                    $orderByClause = ' ORDER BY '.$orderByData['sql'];
 
                     // Check if the query already has an ORDER BY clause
                     if (stripos($query, 'ORDER BY') === false) {
                         // Find position to insert ORDER BY (before LIMIT)
                         $limitPos = stripos($query, 'LIMIT');
                         if ($limitPos !== false) {
-                            $query = substr_replace($query, $orderByClause . ' ', $limitPos, 0);
+                            $query = substr_replace($query, $orderByClause.' ', $limitPos, 0);
                         } else {
                             $query .= $orderByClause;
                         }
@@ -301,7 +272,7 @@ class PostgresService
                                 $orderByPos,
                                 $limitPos - $orderByPos
                             );
-                        } else if ($orderByPos !== false) {
+                        } elseif ($orderByPos !== false) {
                             // No LIMIT clause, ORDER BY is at the end
                             $query = substr_replace($query, $orderByClause, $orderByPos);
                         }
@@ -319,14 +290,14 @@ class PostgresService
             $countQuery = str_replace(':table', $table, $countQuery);
 
             // Add filters to count query
-            if (!empty($whereClause)) {
+            if (! empty($whereClause)) {
                 if (stripos($countQuery, 'WHERE') === false) {
                     $countQuery .= $whereClause;
                 } else {
                     $wherePos = stripos($countQuery, 'WHERE');
                     $endPos = strlen($countQuery);
                     $conditions = substr($countQuery, $wherePos + 6);
-                    $newWhere = " WHERE " . $conditions . " AND " . $filterData['sql'];
+                    $newWhere = ' WHERE '.$conditions.' AND '.$filterData['sql'];
                     $countQuery = substr_replace($countQuery, $newWhere, $wherePos, $endPos - $wherePos);
                 }
             }
@@ -334,16 +305,16 @@ class PostgresService
             $count = $db->select($countQuery, $filterBindings);
 
             // Log the data query with filters to the database
-            if (!empty($filters) || !empty($sorting)) {
+            if (! empty($filters) || ! empty($sorting)) {
                 // Create a descriptive message for the filters and sorting
                 $description = "Query on {$schema}.{$table}";
 
-                if (!empty($filters)) {
-                    $description .= " with filters";
+                if (! empty($filters)) {
+                    $description .= ' with filters';
                 }
 
-                if (!empty($sorting)) {
-                    $description .= (!empty($filters) ? " and" : " with") . " sorting";
+                if (! empty($sorting)) {
+                    $description .= (! empty($filters) ? ' and' : ' with').' sorting';
                 }
 
                 // Save the executed query to the database
@@ -357,7 +328,7 @@ class PostgresService
 
             return [
                 'data' => $data,
-                'total' => $count[0]->count
+                'total' => $count[0]->count,
             ];
         } finally {
             $this->connectionManager->cleanupConnection($connection->ulid);
@@ -367,10 +338,6 @@ class PostgresService
     /**
      * Execute a custom query.
      *
-     * @param DatabaseConnection $connection
-     * @param string $database
-     * @param string $query
-     * @return array
      * @throws QueryException
      */
     public function executeQuery(DatabaseConnection $connection, string $database, string $query): array
@@ -384,6 +351,7 @@ class PostgresService
             if (count($statements) === 1) {
                 // If there's only one statement, use the standard method
                 $result = $db->select($statements[0]);
+
                 return $result;
             } else {
                 // Execute multiple statements and return results from the last SELECT statement
@@ -397,9 +365,7 @@ class PostgresService
     /**
      * Execute multiple SQL statements and return results.
      *
-     * @param \Illuminate\Database\Connection $connection
-     * @param array $statements
-     * @return array
+     * @param  \Illuminate\Database\Connection  $connection
      */
     private function executeMultipleStatements($connection, array $statements): array
     {
@@ -437,13 +403,6 @@ class PostgresService
     /**
      * Insert a new row into a table.
      *
-     * @param DatabaseConnection $connection
-     * @param string $database
-     * @param string $schema
-     * @param string $table
-     * @param array $data
-     * @param int|null $executorId
-     * @return bool
      * @throws QueryException
      */
     public function insertRow(
@@ -493,11 +452,6 @@ class PostgresService
     /**
      * Execute a stored query with parameters.
      *
-     * @param DatabaseConnection $connection
-     * @param string $database
-     * @param string $type
-     * @param array $parameters
-     * @return array
      * @throws QueryException
      */
     public function executeStoredQuery(DatabaseConnection $connection, string $database, string $type, array $parameters): array
@@ -530,13 +484,6 @@ class PostgresService
 
     /**
      * Get the total count of rows in a table.
-     *
-     * @param DatabaseConnection $connection
-     * @param string $database
-     * @param string $table
-     * @param string $schema
-     * @param array $filters
-     * @return int
      */
     public function getTableCount(
         DatabaseConnection $connection,
@@ -554,17 +501,17 @@ class PostgresService
             $query = "SELECT COUNT(*) as count FROM {$qualifiedTable}";
             $bindings = [];
 
-            if (!empty($filters)) {
+            if (! empty($filters)) {
                 $whereClause = $this->queryBuilder->buildWhereClauseFromFilters($filters);
-                if (!empty($whereClause['sql'])) {
-                    $query .= " WHERE " . $whereClause['sql'];
+                if (! empty($whereClause['sql'])) {
+                    $query .= ' WHERE '.$whereClause['sql'];
                     $bindings = $whereClause['bindings'];
                 }
             }
 
             $result = $db->select($query, $bindings);
 
-            return (int)$result[0]->count;
+            return (int) $result[0]->count;
         } finally {
             $this->connectionManager->cleanupConnection($connection->ulid);
         }
@@ -572,9 +519,6 @@ class PostgresService
 
     /**
      * Split a SQL string into individual statements.
-     *
-     * @param string $sql
-     * @return array
      */
     private function splitSqlStatements(string $sql): array
     {
@@ -599,46 +543,43 @@ class PostgresService
 
             // Handle quotes
             if ($char === "'" && ($i === 0 || $sql[$i - 1] !== '\\')) {
-                $inSingleQuote = !$inSingleQuote;
+                $inSingleQuote = ! $inSingleQuote;
             } elseif ($char === '"' && ($i === 0 || $sql[$i - 1] !== '\\')) {
-                $inDoubleQuote = !$inDoubleQuote;
+                $inDoubleQuote = ! $inDoubleQuote;
             }
 
             // End of statement if we find a semicolon outside of quotes
-            if ($char === ';' && !$inSingleQuote && !$inDoubleQuote) {
+            if ($char === ';' && ! $inSingleQuote && ! $inDoubleQuote) {
                 $statements[] = trim($currentStatement);
                 $currentStatement = '';
             }
         }
 
         // Add the last statement if there is one (without a trailing semicolon)
-        if (!empty($currentStatement)) {
+        if (! empty($currentStatement)) {
             $statements[] = trim($currentStatement);
         }
 
         // Remove empty statements
         return array_filter($statements, function ($stmt) {
-            return !empty(trim($stmt));
+            return ! empty(trim($stmt));
         });
     }
 
     /**
      * Helper function to interpolate query values for logging.
-     *
-     * @param string $query
-     * @param array $values
-     * @return string
      */
     private function interpolateQuery(string $query, array $values): string
     {
         $interpolated = $query;
         foreach ($values as $value) {
-            $value = is_null($value) ? 'NULL' : "'" . addslashes($value) . "'";
+            $value = is_null($value) ? 'NULL' : "'".addslashes($value)."'";
             $position = strpos($interpolated, '?');
             if ($position !== false) {
                 $interpolated = substr_replace($interpolated, $value, $position, 1);
             }
         }
+
         return $interpolated;
     }
 }
