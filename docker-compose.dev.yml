@@ -1,0 +1,41 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: docker/production/Dockerfile
+      args:
+        USER_ID: ${USER_ID:-9999}
+        GROUP_ID: ${GROUP_ID:-9999}
+        SERVERSIDEUP_PHP_VERSION: ${PHP_VERSION:-8.4-fpm-nginx-alpine}
+        POSTGRES_VERSION: ${POSTGRES_VERSION:-17}
+    restart: unless-stopped
+    ports:
+      - '8080:8080'
+    environment:
+      APP_NAME: ${APP_NAME:-Peeper}
+      APP_ENV: ${APP_ENV:-development}
+      APP_KEY: ${APP_KEY}
+      APP_DEBUG: true
+      APP_URL: ${APP_URL:-http://127.0.0.1:8080}
+      DB_CONNECTION: ${DB_CONNECTION:-sqlite}
+      SESSION_DRIVER: ${SESSION_DRIVER:-database}
+      CACHE_STORE: ${CACHE_STORE:-database}
+    volumes:
+      - storage:/var/www/html/storage
+    networks:
+      - peeper-network
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://127.0.0.1:8080/healthcheck']
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+volumes:
+  storage:
+
+networks:
+  peeper-network:
+    driver: bridge
