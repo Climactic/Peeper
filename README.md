@@ -13,24 +13,30 @@ Peeper is currently in alpha development. Guides and documentation are coming so
 
 ## Features
 - [x] Add and manage your databases.
-- [x] Query your databases with a SQL editor.
+- [x] Query your databases with a SQL editor and view history.
 - [x] Visualize your data with a data viewer.
 - [ ] Export your data to a file.
 - [ ] Import your data from a file.
 - [ ] Add and manage your storage providers.
 - [ ] Upload and download files to your storage providers.
+- [ ] Multi-tenancy with role-based access control.
+- [ ] SSO with relevant providers.
+- [ ] 2 Factor Authentication
 
 ## Supported Databases
 - [x] Postgres
+- [ ] SQLite (including Turso and other LibSQL providers)
 - [ ] MySQL
-- [ ] MongoDB
 - [ ] Redis
-- [ ] Elasticsearch
-- [ ] ClickHouse
-- [ ] Snowflake
 
 ## Supported Storage Providers
-- [ ] S3
+- [ ] AWS S3
+- [ ] Hetzner Object Storage
+- [ ] Digital Ocean Spaces
+- [ ] Cloudflare R2
+- [ ] Wasabi
+- [ ] Minio
+- [ ] Other (Custom)
 
 ## Preview
 ![Peeper Screenshot](./.github/assets/screenshot.webp)
