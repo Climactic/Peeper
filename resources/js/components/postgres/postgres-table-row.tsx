@@ -16,7 +16,7 @@ const PostgresTableRow = ({ row, columns, rowIndex, onEdit, onDelete }: Postgres
             <ContextMenuTrigger className="w-full" asChild>
                 <TableRow key={rowIndex} className="w-full">
                     {columns.map((column, colIndex) => (
-                        <TableCell key={colIndex} className="h-10">
+                        <TableCell key={colIndex} className="hover:border-primary/50 h-10 truncate hover:border">
                             {row[column.column_name] !== null ? String(row[column.column_name]) : <span className="text-gray-400">NULL</span>}
                         </TableCell>
                     ))}

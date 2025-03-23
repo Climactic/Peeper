@@ -5,11 +5,10 @@ import PostgresFilters from "@/components/postgres/postgres-filters";
 import PostgresSort from "@/components/postgres/postgres-sort";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Table, TableBody, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { DatabaseConnection } from "@/types/database";
 import { TableRecord } from "@/types/postgres";
-import { CodeIcon, KeyIcon, TableIcon } from "lucide-react";
-import { useState } from "react";
+import { CalendarIcon, CheckIcon, CodeIcon, HashIcon, KeyIcon, SigmaIcon, TableIcon, TextIcon } from "lucide-react";
+import { ReactElement, useState } from "react";
 import DeletePostgresRow from "./delete-postgres-row";
 import EditPostgresRow from "./edit-postgres-row";
 import PostgresTableRow from "./postgres-table-row";
@@ -102,15 +101,29 @@ const TableDataDisplay = ({
         }
     };
 
-    const PrimaryKeyIcon = ({ isPrimaryKey }: { isPrimaryKey: boolean | undefined }) => {
-        return isPrimaryKey ? (
-            <Tooltip>
-                <TooltipTrigger>
-                    <KeyIcon className="text-primary size-3 rotate-45" />
-                </TooltipTrigger>
-                <TooltipContent>Primary Key</TooltipContent>
-            </Tooltip>
-        ) : null;
+    const getColumnIcon = (column: ColumnData) => {
+        const icons: ReactElement[] = [];
+        if (column.is_primary_key) {
+            icons.push(<KeyIcon className="text-primary size-3 rotate-45" />);
+        }
+        if (/^(text|character|varchar|char|citext)/.test(column.data_type)) {
+            icons.push(<TextIcon className="text-primary size-3" />);
+        }
+        if (/^(integer|bigint|smallint|numeric|decimal|float|double)/.test(column.data_type)) {
+            icons.push(<SigmaIcon className="text-primary size-3" />);
+        }
+        if (/^(boolean|bool)/.test(column.data_type)) {
+            icons.push(<CheckIcon className="text-primary size-3" />);
+        }
+        if (/^(date|time|timestamp|interval)/.test(column.data_type)) {
+            icons.push(<CalendarIcon className="text-primary size-3" />);
+        } else if (/^(json|jsonb)/.test(column.data_type)) {
+            icons.push(<CodeIcon className="text-primary size-3" />);
+        } else if (/^(uuid|uuid-ossp)/.test(column.data_type)) {
+            icons.push(<HashIcon className="text-primary size-3" />);
+        }
+
+        return icons;
     };
 
     return (
@@ -149,7 +162,7 @@ const TableDataDisplay = ({
                                     {columns.map((column, index) => (
                                         <TableHead key={index} className="h-10">
                                             <div className="flex items-center gap-1 align-middle">
-                                                <PrimaryKeyIcon isPrimaryKey={column.is_primary_key} />
+                                                {getColumnIcon(column)}
                                                 {column.column_name}
                                                 <span className="font-mono text-xs text-gray-500">({column.data_type})</span>
                                             </div>

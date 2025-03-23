@@ -1,6 +1,5 @@
 import TableDataDisplay from "@/components/postgres/postgres-table-data";
 import { DatabaseConnection } from "@/types/database";
-import { ScrollArea } from "../ui/scroll-area";
 
 /**
  * Component for displaying table data in regular table view mode
@@ -46,23 +45,21 @@ const TableView = ({
     }
 
     return (
-        <ScrollArea className="max-w-full">
-            <TableDataDisplay
-                selectedTable={selectedTable}
-                loadingTable={loadingTable}
-                columns={columns}
-                tableData={tableData}
-                pagination={pagination}
-                setPagination={setPagination}
-                connectionId={connectionId}
-                database={database}
-                schema={schema}
-                onRowAdded={refreshTableData}
-                connection={connection}
-                refreshTableData={refreshTableData}
-                isQueryResult={false}
-            />
-        </ScrollArea>
+        <TableDataDisplay
+            selectedTable={selectedTable}
+            loadingTable={loadingTable}
+            columns={columns}
+            tableData={tableData}
+            pagination={pagination}
+            setPagination={setPagination}
+            connectionId={connectionId}
+            database={database}
+            schema={schema}
+            onRowAdded={refreshTableData}
+            connection={connection}
+            refreshTableData={refreshTableData}
+            isQueryResult={false}
+        />
     );
 };
 

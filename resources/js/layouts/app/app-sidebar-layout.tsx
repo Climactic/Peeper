@@ -14,9 +14,9 @@ export default function AppSidebarLayout({ children, breadcrumbs = [], actions }
     return (
         <AppShell variant="sidebar">
             <AppSidebar />
-            <AppContent variant="sidebar">
+            <AppContent variant="sidebar" className="overflow-hidden">
                 <AppSidebarHeader breadcrumbs={breadcrumbs} actions={actions} />
-                {children}
+                <div className="mx-auto flex w-full flex-1 flex-col">{children}</div>
             </AppContent>
         </AppShell>
     );
