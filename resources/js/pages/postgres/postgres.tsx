@@ -1,14 +1,19 @@
 import If from "@/components/if";
 import CreatePostgresConnection from "@/components/postgres/create-postgres-connection";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import AppLayout from "@/layouts/app-layout";
 import { DatabaseConnection } from "@/types/database";
 import { Head, Link } from "@inertiajs/react";
-import { CogIcon, DatabaseIcon, PlusIcon, ServerIcon } from "lucide-react";
+import dayjs from "dayjs";
+import relativeTime from "dayjs/plugin/relativeTime";
+import { Circle, CogIcon, DatabaseIcon, PlusIcon, ServerIcon } from "lucide-react";
 import { SiPostgresql } from "react-icons/si";
 
+dayjs.extend(relativeTime);
+
 interface PostgresProps {
-    connections: DatabaseConnection[];
+    connections: (DatabaseConnection & { connection_status: boolean; connection_error: string | null; last_tested: string })[];
 }
 
 const Postgres = ({ connections }: PostgresProps) => {
@@ -22,9 +27,39 @@ const Postgres = ({ connections }: PostgresProps) => {
                         <Link href={route("postgres.explore", { ulid: connection.ulid })} key={connection.ulid}>
                             <Card className="h-40 w-full md:w-72">
                                 <CardHeader>
-                                    <CardTitle className="flex items-center gap-2 align-middle">
-                                        <SiPostgresql className="size-4" />
-                                        {connection.name}
+                                    <CardTitle className="flex items-center justify-between gap-2 align-middle">
+                                        <div className="flex items-center gap-2">
+                                            <SiPostgresql className="size-4" />
+                                            {connection.name}
+                                        </div>
+                                        <div className="flex items-center gap-2">
+                                            <If condition={connection.connection_status}>
+                                                <TooltipProvider>
+                                                    <Tooltip>
+                                                        <TooltipTrigger asChild>
+                                                            <Circle className="size-3 animate-pulse fill-green-500 text-green-500" />
+                                                        </TooltipTrigger>
+                                                        <TooltipContent>
+                                                            <p className="text-sm">Online</p>
+                                                            <p className="text-muted-foreground text-xs">{dayjs(connection.last_tested).fromNow()}</p>
+                                                        </TooltipContent>
+                                                    </Tooltip>
+                                                </TooltipProvider>
+                                            </If>
+                                            <If condition={!connection.connection_status}>
+                                                <TooltipProvider>
+                                                    <Tooltip>
+                                                        <TooltipTrigger asChild>
+                                                            <Circle className="size-3 animate-pulse fill-red-500 text-red-500" />
+                                                        </TooltipTrigger>
+                                                        <TooltipContent>
+                                                            <p className="text-sm">Offline</p>
+                                                            <p className="text-muted-foreground text-xs">{connection.connection_error}</p>
+                                                        </TooltipContent>
+                                                    </Tooltip>
+                                                </TooltipProvider>
+                                            </If>
+                                        </div>
                                     </CardTitle>
                                 </CardHeader>
                                 <CardContent>

@@ -47,6 +47,9 @@ export interface PostgresStoreState {
     executingQuery: boolean;
     loadingHistory: boolean;
 
+    // Table Selection
+    selectedColumns: Column[];
+
     setSelectedSchema: (schema: string | null) => void;
     setSchemas: (schemas: Schema[]) => void;
     setTables: (tables: Table[]) => void;
@@ -59,6 +62,9 @@ export interface PostgresStoreState {
     setFilters: (filters: Filter[]) => void;
     setSorting: (sorting: SortOption[]) => void;
     setPagination: (pagination: Partial<Pagination>) => void;
+
+    // Table Selection
+    setSelectedColumns: (columns: Column[]) => void;
 
     // Query-related setters and actions
     setQueryMode: (isActive: boolean) => void;
@@ -102,6 +108,9 @@ export const postgresStore = create<PostgresStoreState>((set, get) => ({
     executingQuery: false,
     loadingHistory: false,
 
+    // Table Selection
+    selectedColumns: [],
+
     setSelectedSchema: (schema) => set({ selectedSchema: schema }),
     setSchemas: (schemas) => set({ schemas }),
     setTables: (tables) => set({ tables }),
@@ -113,6 +122,7 @@ export const postgresStore = create<PostgresStoreState>((set, get) => ({
     setErrorMessage: (error) => set({ errorMessage: error }),
     setFilters: (filters) => set({ filters }),
     setSorting: (sorting) => set({ sorting }),
+    setSelectedColumns: (columns: Column[]) => set({ selectedColumns: columns }),
     setPagination: (paginationUpdate) =>
         set((state) => ({
             pagination: { ...state.pagination, ...paginationUpdate },

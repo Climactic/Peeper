@@ -173,7 +173,7 @@ const PostgresQuerySidebar = ({ connection }: PostgresQuerySidebarProps) => {
                                     >
                                         <div className="mb-1 flex items-center justify-between">
                                             <div className="text-xs font-medium text-gray-500">{dayjs(item.created_at).fromNow()}</div>
-                                            <div className="text-xs text-gray-500">{item.executor === "user" ? "You" : "System"}</div>
+                                            <div className="text-xs text-gray-500">{item.executor === "user" ? "User" : "System"}</div>
                                         </div>
                                         <div className="overflow-hidden font-mono text-sm text-wrap text-ellipsis whitespace-normal">
                                             {item.query.slice(0, 100) + (item.query.length > 100 ? "..." : "")}

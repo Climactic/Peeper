@@ -50,8 +50,31 @@ class PostgresConnectionController extends Controller
             ->where('user_id', $request->user()->id)
             ->get();
 
+        // Test connection status for each connection
+        $connectionsWithStatus = $connections->map(function ($connection) {
+            try {
+                $credentials = [
+                    'host' => $connection->host,
+                    'port' => $connection->port,
+                    'username' => $connection->username,
+                    'password' => $connection->password,
+                    'database' => $connection->database,
+                ];
+
+                $isOnline = $this->connectionManager->testConnection($credentials);
+                $connection->connection_status = $isOnline;
+                $connection->last_tested = now();
+            } catch (\Exception $e) {
+                $connection->connection_status = false;
+                $connection->connection_error = $e->getMessage();
+                $connection->last_tested = now();
+            }
+
+            return $connection;
+        });
+
         return Inertia::render('postgres/postgres', [
-            'connections' => $connections,
+            'connections' => $connectionsWithStatus,
         ]);
     }
 
