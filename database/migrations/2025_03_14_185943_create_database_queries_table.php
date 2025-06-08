@@ -14,11 +14,11 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('database_queries', function (Blueprint $table) {
-            $table->id();
-            $table->foreignIdFor(DatabaseConnection::class)->constrained()->cascadeOnDelete();
+            $table->ulid('id')->primary();
+            $table->foreignUlid('database_connection_id')->constrained('database_connections')->cascadeOnDelete();
             $table->string('query');
             $table->enum('executor', ['user', 'system']);
-            $table->foreignIdFor(User::class, 'executor_id')->nullable()->constrained()->cascadeOnDelete();
+            $table->foreignUlid('executor_id')->nullable()->constrained('users')->cascadeOnDelete();
             $table->json('parameters')->nullable()->comment('JSON encoded parameters required for the query');
             $table->timestamps();
         });

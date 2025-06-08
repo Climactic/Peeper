@@ -36,7 +36,7 @@ class PostgresQueryController extends Controller
     public function list(Request $request, DatabaseConnection $connection)
     {
         // Ensure the user can only access their own connections
-        if ($connection->user_id !== $request->user()->id) {
+        if ($connection->workspace_id !== $request->user()->current_workspace_id) {
             return response()->json([], 403);
         }
 
@@ -65,7 +65,7 @@ class PostgresQueryController extends Controller
             $connection = DatabaseConnection::where('ulid', $request->input('connection_id'))->firstOrFail();
 
             // Ensure the user can only access their own connections
-            if ($connection->user_id !== $request->user()->id) {
+            if ($connection->workspace_id !== $request->user()->current_workspace_id) {
                 return response()->json([
                     'success' => false,
                     'error' => 'Unauthorized action.',
@@ -134,7 +134,7 @@ class PostgresQueryController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'error' => 'An error occurred: '.$e->getMessage(),
+                'error' => 'An error occurred: ' . $e->getMessage(),
                 'query' => $request->input('query'),
             ], 500);
         }
@@ -149,7 +149,7 @@ class PostgresQueryController extends Controller
     public function getQueryHistory(Request $request, DatabaseConnection $connection, $database)
     {
         // Ensure the user can only access their own connections
-        if ($connection->user_id !== $request->user()->id) {
+        if ($connection->workspace_id !== $request->user()->current_workspace_id) {
             return response()->json([], 403);
         }
 
