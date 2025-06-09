@@ -1,20 +1,20 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { DatabaseConnection } from "@/types/database";
-import { ConnectionStatus } from "@/types/postgres";
-import axios from "axios";
-import dayjs from "dayjs";
-import { Circle, CogIcon, DatabaseIcon, ServerIcon } from "lucide-react";
-import { useEffect, useState } from "react";
-import { SiPostgresql } from "react-icons/si";
-import If from "../if";
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { DatabaseConnection } from '@/types/database';
+import { ConnectionStatus } from '@/types/postgres';
+import axios from 'axios';
+import dayjs from 'dayjs';
+import { Circle, CogIcon, DatabaseIcon, ServerIcon } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { SiPostgresql } from 'react-icons/si';
+import If from '../if';
 
 const PostgresConnection = ({ connection }: { connection: DatabaseConnection }) => {
     const [status, setStatus] = useState<ConnectionStatus | null>(null);
 
     useEffect(() => {
         const fetchStatus = async () => {
-            const response = await axios.get(route("postgres.connection-status", { id: connection.id }));
+            const response = await axios.get(route('postgres.connection-status', { id: connection.id }));
             setStatus(response.data);
         };
         fetchStatus();

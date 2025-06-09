@@ -1,46 +1,50 @@
-import { NavFooter } from "@/components/nav-footer";
-import { NavMain } from "@/components/nav-main";
-import { NavUser } from "@/components/nav-user";
-import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from "@/components/ui/sidebar";
-import { type NavItem } from "@/types";
-import { Link } from "@inertiajs/react";
-import { BookOpen, Folder, HeartIcon, LayoutGrid } from "lucide-react";
-import { SiPostgresql } from "react-icons/si";
-import AppLogo from "./app-logo";
+import { NavFooter } from '@/components/nav-footer';
+import { NavMain } from '@/components/nav-main';
+import { NavUser } from '@/components/nav-user';
+import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
+import { SharedData, type NavItem } from '@/types';
+import { Link, usePage } from '@inertiajs/react';
+import { BookOpen, Folder, HeartIcon, LayoutGrid } from 'lucide-react';
+import { SiPostgresql } from 'react-icons/si';
+import AppLogo from './app-logo';
+import { TeamSelector } from './workspace-selector';
+import If from './if';
 
 const mainNavItems: NavItem[] = [
     {
-        title: "Dashboard",
-        href: "/dashboard",
+        title: 'Dashboard',
+        href: '/dashboard',
         icon: LayoutGrid,
     },
     {
-        title: "Postgres",
-        href: "/postgres",
+        title: 'Postgres',
+        href: '/postgres',
         icon: SiPostgresql,
-        group: "Database",
+        group: 'Database',
     },
 ];
 
 const footerNavItems: NavItem[] = [
     {
-        title: "Support Peeper",
-        href: "https://github.com/sponsors/Climactic",
+        title: 'Support Peeper',
+        href: 'https://github.com/sponsors/Climactic',
         icon: HeartIcon,
     },
     {
-        title: "Repository",
-        href: "https://github.com/Climactic/Peeper",
+        title: 'Repository',
+        href: 'https://github.com/Climactic/Peeper',
         icon: Folder,
     },
     {
-        title: "Documentation",
-        href: "https://peeper.dev/docs",
+        title: 'Documentation',
+        href: 'https://peeper.dev/docs',
         icon: BookOpen,
     },
 ];
 
 export function AppSidebar() {
+    const { workspaces } = usePage<SharedData>().props;
+
     return (
         <Sidebar collapsible="icon" variant="inset">
             <SidebarHeader>
@@ -53,6 +57,10 @@ export function AppSidebar() {
                         </SidebarMenuButton>
                     </SidebarMenuItem>
                 </SidebarMenu>
+
+                <If condition={workspaces.enabled}>
+                    <TeamSelector workspaces={workspaces} />
+                </If>
             </SidebarHeader>
 
             <SidebarContent>
