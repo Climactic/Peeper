@@ -47,7 +47,6 @@ class PostgresConnectionController extends Controller
     public function index(Request $request)
     {
         $connections = DatabaseConnection::where('type', 'postgres')
-            ->where('workspace_id', $request->user()->current_workspace_id)
             ->get();
 
         return Inertia::render('postgres/postgres', [
@@ -62,7 +61,7 @@ class PostgresConnectionController extends Controller
      */
     public function connectionStatus(Request $request, $id)
     {
-        $connection = DatabaseConnection::where('id', $id)->where('workspace_id', $request->user()->current_workspace_id)->first();
+        $connection = DatabaseConnection::where('id', $id)->first();
 
         try {
             $credentials = [

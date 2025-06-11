@@ -2,8 +2,8 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use App\Concerns\HasUlid;
+use Illuminate\Database\Eloquent\Model;
 
 class WorkspaceMembership extends Model
 {
@@ -38,7 +38,7 @@ class WorkspaceMembership extends Model
     // Accessors
     public function getPermissionsAttribute()
     {
-        return config('teams.roles.' . strtolower($this->role) . '.permissions', []);
+        return config('teams.roles.'.strtolower($this->role).'.permissions', []);
     }
 
     public function isOwner()

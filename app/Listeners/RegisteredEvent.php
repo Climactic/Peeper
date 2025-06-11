@@ -2,10 +2,10 @@
 
 namespace App\Listeners;
 
-use Illuminate\Auth\Events\Registered;
-use Illuminate\Support\Str;
 use App\Models\Workspace;
 use App\Models\WorkspaceMembership;
+use Illuminate\Auth\Events\Registered;
+use Illuminate\Support\Str;
 
 class RegisteredEvent
 {
@@ -26,8 +26,8 @@ class RegisteredEvent
         $user = $event->user;
 
         $workspace = Workspace::create([
-            'name' => $user->name . '\'s Workspace',
-            'slug' => Str::slug($user->name . 'Workspace') . Str::random(5),
+            'name' => $user->name.'\'s Workspace',
+            'slug' => Str::slug($user->name.'Workspace').Str::random(5),
             'owner_id' => $user->id,
         ]);
 

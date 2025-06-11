@@ -3,14 +3,14 @@
 namespace App\Concerns;
 
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Support\Facades\Context;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Context;
 
 trait HasWorkspaceScope
 {
     public static function bootHasWorkspaceScope(): void
     {
-        parent::addGlobalScope('workspace', function (Builder $builder) {
+        static::addGlobalScope('workspace', function (Builder $builder) {
             if ($workspaceId = Context::get('workspace_id')) {
                 $builder->where('workspace_id', $workspaceId);
             }

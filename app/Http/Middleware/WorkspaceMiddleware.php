@@ -35,7 +35,7 @@ class WorkspaceMiddleware
 
             // Set the current workspace context if user has a current workspace
             if ($user->current_workspace_id) {
-                Context::set('workspace_id', $user->current_workspace_id);
+                Context::add('workspace_id', $user->current_workspace_id);
             }
         }
 

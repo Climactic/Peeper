@@ -22,6 +22,6 @@ class Role extends Model
 
     public function getPermissionsAttribute(): array
     {
-        return config('workspace.roles.' . strtolower($this->name) . '.permissions', []);
+        return config('workspace.roles.'.strtolower($this->name).'.permissions', []);
     }
 }

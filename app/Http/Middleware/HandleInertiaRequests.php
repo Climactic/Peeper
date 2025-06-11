@@ -47,7 +47,7 @@ class HandleInertiaRequests extends Middleware
             'auth' => [
                 'user' => $request->user(),
             ],
-            'ziggy' => fn(): array => [
+            'ziggy' => fn (): array => [
                 ...(new Ziggy)->toArray(),
                 'location' => $request->url(),
             ],
@@ -61,7 +61,7 @@ class HandleInertiaRequests extends Middleware
 
     private function getUserWorkspacesData(?User $user): array
     {
-        if (!$user) {
+        if (! $user) {
             return [[], null];
         }
 
@@ -69,7 +69,7 @@ class HandleInertiaRequests extends Middleware
             ->with('workspace')
             ->get();
 
-        $workspaces = $memberships->map(fn($membership) => [
+        $workspaces = $memberships->map(fn ($membership) => [
             'id' => $membership->workspace->id,
             'name' => $membership->workspace->name,
             'role' => $membership->role,
