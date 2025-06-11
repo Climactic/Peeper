@@ -19,7 +19,7 @@ export interface DatabaseMetadata {
 }
 
 export interface DatabaseConnection {
-    ulid: string;
+    id: string;
     name: string;
     host: string;
     port: number;

@@ -2,11 +2,13 @@ import { NavFooter } from "@/components/nav-footer";
 import { NavMain } from "@/components/nav-main";
 import { NavUser } from "@/components/nav-user";
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from "@/components/ui/sidebar";
-import { type NavItem } from "@/types";
-import { Link } from "@inertiajs/react";
-import { BookOpen, Folder, HeartIcon, LayoutGrid } from "lucide-react";
+import { type NavItem, SharedData } from "@/types";
+import { Link, usePage } from "@inertiajs/react";
+import { BookOpen, Folder, HeartIcon, LayoutGrid, Settings } from "lucide-react";
 import { SiPostgresql } from "react-icons/si";
 import AppLogo from "./app-logo";
+import If from "./if";
+import { TeamSelector } from "./workspace-selector";
 
 const mainNavItems: NavItem[] = [
     {
@@ -14,6 +16,11 @@ const mainNavItems: NavItem[] = [
         href: "/dashboard",
         icon: LayoutGrid,
     },
+    // {
+    //     title: "Settings",
+    //     href: "/settings/workspace",
+    //     icon: Settings,
+    // },
     {
         title: "Postgres",
         href: "/postgres",
@@ -41,6 +48,8 @@ const footerNavItems: NavItem[] = [
 ];
 
 export function AppSidebar() {
+    const { workspaces } = usePage<SharedData>().props;
+
     return (
         <Sidebar collapsible="icon" variant="inset">
             <SidebarHeader>
@@ -53,6 +62,10 @@ export function AppSidebar() {
                         </SidebarMenuButton>
                     </SidebarMenuItem>
                 </SidebarMenu>
+
+                <If condition={workspaces.enabled}>
+                    <TeamSelector workspaces={workspaces} />
+                </If>
             </SidebarHeader>
 
             <SidebarContent>

@@ -23,7 +23,7 @@ const PostgresExplorer = ({ connection, error }: PostgresExplorerProps) => {
         { title: "Postgres", href: route("postgres.index") },
         {
             title: connection.name,
-            href: route("postgres.explore", { ulid: connection.ulid }),
+            href: route("postgres.explore", { connection: connection.id }),
         },
     ];
 
@@ -165,7 +165,7 @@ const ExplorerContent = ({ connection, breadcrumbs }: ExplorerContentProps) => {
                     tableData={tableData}
                     pagination={pagination}
                     setPagination={setPagination}
-                    connectionId={connection.ulid}
+                    connectionId={connection.id}
                     database={connection.database}
                     selectedSchema={selectedSchema}
                     refreshTableData={refreshTableData}

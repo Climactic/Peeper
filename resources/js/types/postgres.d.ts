@@ -52,3 +52,10 @@ export interface SortOption {
     column: string;
     direction: "asc" | "desc";
 }
+
+export interface ConnectionStatus {
+    id: string;
+    connection_status: boolean;
+    connection_error: string | null;
+    last_tested: string;
+}

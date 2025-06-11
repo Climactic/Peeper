@@ -37,6 +37,9 @@ WORKDIR /app
 COPY package*.json bun.lock ./
 RUN bun i
 COPY . .
+
+ENV WORKSPACE_ENABLED=false
+
 RUN bun --bun run build
 
 # =================================================================
@@ -96,7 +99,8 @@ ENV PHP_OPCACHE_ENABLE=1 \
     AUTORUN_LARAVEL_STORAGE_LINK=true \
     APP_BASE_DIR=/var/www/html \
     NGINX_WEBROOT=/var/www/html/public \
-    SSL_MODE=off
+    SSL_MODE=off \
+    WORKSPACE_ENABLED=false
 
 # Configure entrypoint
 COPY --chmod=755 docker/production/entrypoint.d/ /etc/entrypoint.d

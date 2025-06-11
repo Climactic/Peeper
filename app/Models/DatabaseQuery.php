@@ -2,13 +2,14 @@
 
 namespace App\Models;
 
+use App\Concerns\HasUlid;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class DatabaseQuery extends Model
 {
-    use HasFactory;
+    use HasFactory, HasUlid;
 
     /**
      * The attributes that are mass assignable.

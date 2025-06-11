@@ -168,7 +168,7 @@ export const postgresStore = create<PostgresStoreState>((set, get) => ({
         try {
             const response = await axios.post(
                 route("postgres.query.execute", {
-                    connection_id: connection.ulid,
+                    connection_id: connection.id,
                     database: connection.database,
                     query: queryString,
                 }),
@@ -188,7 +188,7 @@ export const postgresStore = create<PostgresStoreState>((set, get) => ({
                 await axios
                     .get(
                         route("postgres.query.history", {
-                            connection: connection.ulid,
+                            connection: connection.id,
                             database: connection.database,
                         }),
                     )
@@ -274,7 +274,7 @@ export const postgresStore = create<PostgresStoreState>((set, get) => ({
         try {
             const response = await axios.get(
                 route("postgres.query.history", {
-                    connection: connection.ulid,
+                    connection: connection.id,
                     database: connection.database,
                 }),
             );
@@ -297,7 +297,7 @@ export const postgresStore = create<PostgresStoreState>((set, get) => ({
         try {
             const schemasResponse = await axios.get(
                 route("postgres.schemas", {
-                    connection: connection.ulid,
+                    connection: connection.id,
                     database: connection.database,
                 }),
             );
@@ -329,7 +329,7 @@ export const postgresStore = create<PostgresStoreState>((set, get) => ({
         try {
             const tablesResponse = await axios.get(
                 route("postgres.tables", {
-                    connection: connection.ulid,
+                    connection: connection.id,
                     database: connection.database,
                 }),
             );
@@ -359,7 +359,7 @@ export const postgresStore = create<PostgresStoreState>((set, get) => ({
             const [columnsResponse, dataResponse] = await Promise.all([
                 axios.get(
                     route("postgres.columns", {
-                        connection: connection.ulid,
+                        connection: connection.id,
                         database: connection.database,
                         table: tableToFetch,
                         schema: selectedSchema,
@@ -367,7 +367,7 @@ export const postgresStore = create<PostgresStoreState>((set, get) => ({
                 ),
                 axios.get(
                     route("postgres.data", {
-                        connection: connection.ulid,
+                        connection: connection.id,
                         database: connection.database,
                         table: tableToFetch,
                         page: pagination.page,

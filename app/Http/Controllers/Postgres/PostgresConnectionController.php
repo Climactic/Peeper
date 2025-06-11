@@ -47,35 +47,37 @@ class PostgresConnectionController extends Controller
     public function index(Request $request)
     {
         $connections = DatabaseConnection::where('type', 'postgres')
-            ->where('user_id', $request->user()->id)
             ->get();
 
-        // Test connection status for each connection
-        $connectionsWithStatus = $connections->map(function ($connection) {
-            try {
-                $credentials = [
-                    'host' => $connection->host,
-                    'port' => $connection->port,
-                    'username' => $connection->username,
-                    'password' => $connection->password,
-                    'database' => $connection->database,
-                ];
-
-                $isOnline = $this->connectionManager->testConnection($credentials);
-                $connection->connection_status = $isOnline;
-                $connection->last_tested = now();
-            } catch (\Exception $e) {
-                $connection->connection_status = false;
-                $connection->connection_error = $e->getMessage();
-                $connection->last_tested = now();
-            }
-
-            return $connection;
-        });
-
         return Inertia::render('postgres/postgres', [
-            'connections' => $connectionsWithStatus,
+            'connections' => $connections,
         ]);
+    }
+
+    /**
+     * Get the status of a PostgreSQL connection.
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function connectionStatus(Request $request, $id)
+    {
+        $connection = DatabaseConnection::where('id', $id)->first();
+
+        try {
+            $credentials = [
+                'host' => $connection->host,
+                'port' => $connection->port,
+                'username' => $connection->username,
+                'password' => $connection->password,
+                'database' => $connection->database,
+            ];
+
+            $isOnline = $this->connectionManager->testConnection($credentials);
+
+            return response()->json(['connection_status' => $isOnline, 'last_tested' => now(), 'connection_error' => null]);
+        } catch (\Exception $e) {
+            return response()->json(['connection_status' => false, 'last_tested' => now(), 'connection_error' => $e->getMessage()]);
+        }
     }
 
     /**
@@ -128,10 +130,10 @@ class PostgresConnectionController extends Controller
             'password' => $request->input('password'),
             'database' => $request->input('database'),
             'type' => 'postgres',
-            'user_id' => $request->user()->id,
+            'workspace_id' => $request->user()->current_workspace_id,
         ]);
 
-        return redirect()->route('postgres.explore', $connection->ulid)
+        return redirect()->route('postgres.explore', $connection->id)
             ->with('success', 'Connection created successfully');
     }
 
@@ -143,7 +145,7 @@ class PostgresConnectionController extends Controller
     public function explore(DatabaseConnection $connection, Request $request)
     {
         // Ensure the user can only access their own connections
-        if ($connection->user_id !== $request->user()->id) {
+        if ($connection->workspace_id !== $request->user()->current_workspace_id) {
             abort(403, 'Unauthorized action.');
         }
 
@@ -172,7 +174,7 @@ class PostgresConnectionController extends Controller
     public function getSchemas(Request $request, DatabaseConnection $connection, $database)
     {
         // Ensure the user can only access their own connections
-        if ($connection->user_id !== $request->user()->id) {
+        if ($connection->workspace_id !== $request->user()->current_workspace_id) {
             return response()->json(['message' => 'Unauthorized action.'], 403);
         }
 
@@ -194,7 +196,7 @@ class PostgresConnectionController extends Controller
     public function getTables(Request $request, DatabaseConnection $connection, $database)
     {
         // Ensure the user can only access their own connections
-        if ($connection->user_id !== $request->user()->id) {
+        if ($connection->workspace_id !== $request->user()->current_workspace_id) {
             return response()->json(['message' => 'Unauthorized action.'], 403);
         }
 
@@ -217,7 +219,7 @@ class PostgresConnectionController extends Controller
     public function getColumns(Request $request, DatabaseConnection $connection, $database, $table)
     {
         // Ensure the user can only access their own connections
-        if ($connection->user_id !== $request->user()->id) {
+        if ($connection->workspace_id !== $request->user()->current_workspace_id) {
             return response()->json(['message' => 'Unauthorized action.'], 403);
         }
 
@@ -242,7 +244,7 @@ class PostgresConnectionController extends Controller
     public function getTableData(Request $request, DatabaseConnection $connection, $database, $table)
     {
         // Ensure the user can only access their own connections
-        if ($connection->user_id !== $request->user()->id) {
+        if ($connection->workspace_id !== $request->user()->current_workspace_id) {
             return response()->json(['message' => 'Unauthorized action.'], 403);
         }
 
@@ -284,7 +286,7 @@ class PostgresConnectionController extends Controller
     public function insertRow(Request $request, DatabaseConnection $connection)
     {
         // Ensure the user can only access their own connections
-        if ($connection->user_id !== $request->user()->id) {
+        if ($connection->workspace_id !== $request->user()->current_workspace_id) {
             return response()->json(['message' => 'Unauthorized action.'], 403);
         }
 

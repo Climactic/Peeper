@@ -1,6 +1,5 @@
 <?php
 
-use App\Models\User;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -13,8 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('database_connections', function (Blueprint $table) {
-            $table->id();
-            $table->ulid('ulid')->unique();
+            $table->ulid('id')->primary();
             $table->enum('type', ['postgres', 'mysql']);
             $table->string('name');
             $table->string('host');
@@ -27,7 +25,6 @@ return new class extends Migration
             $table->string('sslkey')->nullable();
             $table->string('sslrootcert')->nullable();
             $table->json('metadata')->nullable();
-            $table->foreignIdFor(User::class);
             $table->timestamps();
         });
     }

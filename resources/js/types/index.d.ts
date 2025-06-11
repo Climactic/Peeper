@@ -23,12 +23,20 @@ export interface NavItem {
     group?: string;
 }
 
+export interface Workspace {
+    id: string;
+    name: string;
+    logo?: string;
+    role: string;
+}
+
 export interface SharedData {
     name: string;
     quote: { message: string; author: string };
     auth: Auth;
     ziggy: Config & { location: string };
     [key: string]: unknown;
+    workspaces: { enabled: boolean; all: Workspace[]; current: Workspace | null };
 }
 
 export interface User {

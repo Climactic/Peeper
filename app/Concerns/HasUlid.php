@@ -11,7 +11,7 @@ trait HasUlid
     public function uniqueIds()
     {
         return [
-            'ulid',
+            'id',
         ];
     }
 }
