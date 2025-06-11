@@ -59,3 +59,15 @@ export interface ConnectionStatus {
     connection_error: string | null;
     last_tested: string;
 }
+
+export interface QueryHistoryItem {
+    id: string;
+    database_connection_id: string;
+    query: string;
+    executor: string;
+    executor_id: string | null;
+    type: string;
+    description: string;
+    created_at: string;
+    updated_at: string;
+}

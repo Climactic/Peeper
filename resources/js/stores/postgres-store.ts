@@ -1,26 +1,12 @@
 import { DatabaseConnection } from "@/types/database";
-import { Column, Filter, Pagination, Schema, Table, TableRecord } from "@/types/postgres";
+import { Column, Filter, Pagination, QueryHistoryItem, Schema, Table, TableRecord } from "@/types/postgres";
 import axios, { AxiosError } from "axios";
 import { create } from "zustand";
 
-// Define the sorting option interface
 interface SortOption {
     id: string;
     column: string;
     direction: "asc" | "desc";
-}
-
-// Define query history item interface
-interface QueryHistoryItem {
-    id: number;
-    database_connection_id: number;
-    query: string;
-    executor: string;
-    executor_id: number | null;
-    type: string;
-    description: string;
-    created_at: string;
-    updated_at: string;
 }
 
 export interface PostgresStoreState {
@@ -457,7 +443,7 @@ export const postgresStore = create<PostgresStoreState>((set, get) => ({
         const { selectedTable } = get();
         if (selectedTable) {
             await get().fetchTableData(connection, selectedTable);
-            
+
             // If we're in query mode, refresh the query history to show any new filter/sort queries
             const { isQueryMode } = get();
             if (isQueryMode) {

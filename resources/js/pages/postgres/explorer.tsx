@@ -128,17 +128,20 @@ const ExplorerContent = ({ connection, breadcrumbs }: ExplorerContentProps) => {
         storeRefreshTableData(connection);
     }, [connection, storeRefreshTableData]);
 
-    const handlePaginationChange = useCallback((newPagination: { page: number; perPage: number; total: number }) => {
-        const currentPagination = pagination;
-        setPagination(newPagination);
-        
-        // If page changed, refresh table data to log the query and update history
-        if (newPagination.page !== currentPagination.page || newPagination.perPage !== currentPagination.perPage) {
-            setTimeout(() => {
-                storeRefreshTableData(connection);
-            }, 0);
-        }
-    }, [pagination, setPagination, connection, storeRefreshTableData]);
+    const handlePaginationChange = useCallback(
+        (newPagination: { page: number; perPage: number; total: number }) => {
+            const currentPagination = pagination;
+            setPagination(newPagination);
+
+            // If page changed, refresh table data to log the query and update history
+            if (newPagination.page !== currentPagination.page || newPagination.perPage !== currentPagination.perPage) {
+                setTimeout(() => {
+                    storeRefreshTableData(connection);
+                }, 0);
+            }
+        },
+        [pagination, setPagination, connection, storeRefreshTableData],
+    );
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>

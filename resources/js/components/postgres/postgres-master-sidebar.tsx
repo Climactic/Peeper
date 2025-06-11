@@ -10,19 +10,12 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip
 import { usePostgresStore } from "@/contexts/postgres-context";
 import { useAppearance } from "@/hooks/use-appearance";
 import { DatabaseConnection } from "@/types/database";
+import { QueryHistoryItem } from "@/types/postgres";
 import Editor from "@monaco-editor/react";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
-import { 
-    CodeIcon, 
-    DatabaseIcon,
-    PanelLeftIcon, 
-    PlayIcon, 
-    RotateCcwIcon, 
-    SearchIcon, 
-    XIcon 
-} from "lucide-react";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { CodeIcon, DatabaseIcon, PanelLeftIcon, PlayIcon, RotateCcwIcon, SearchIcon, XIcon } from "lucide-react";
+import { useCallback, useEffect, useState } from "react";
 import { Separator } from "../ui/separator";
 
 dayjs.extend(relativeTime);
@@ -36,18 +29,6 @@ interface TableData {
     table_name: string;
 }
 
-interface QueryHistoryItem {
-    id: number;
-    database_connection_id: number;
-    query: string;
-    executor: string;
-    executor_id: number | null;
-    type: string;
-    description: string;
-    created_at: string;
-    updated_at: string;
-}
-
 interface PostgresMasterSidebarProps {
     connection: DatabaseConnection;
     loading: boolean;
@@ -59,19 +40,19 @@ interface PostgresMasterSidebarProps {
     onTableSelect: (tableName: string) => void;
 }
 
-const PostgresMasterSidebar = ({ 
+const PostgresMasterSidebar = ({
     connection,
-    loading, 
-    selectedSchema, 
-    schemas, 
-    tables, 
-    selectedTable, 
-    onSchemaSelect, 
-    onTableSelect 
+    loading,
+    selectedSchema,
+    schemas,
+    tables,
+    selectedTable,
+    onSchemaSelect,
+    onTableSelect,
 }: PostgresMasterSidebarProps) => {
     const isQueryMode = usePostgresStore((state) => state.isQueryMode);
     const queryString = usePostgresStore((state) => state.queryString);
-    const queryHistory = usePostgresStore((state) => state.queryHistory) as QueryHistoryItem[];
+    const queryHistory = usePostgresStore((state) => state.queryHistory);
     const executingQuery = usePostgresStore((state) => state.executingQuery);
     const loadingHistory = usePostgresStore((state) => state.loadingHistory);
     const setQueryString = usePostgresStore((state) => state.setQueryString);
@@ -81,7 +62,7 @@ const PostgresMasterSidebar = ({
     const [open, setOpen] = useState(false);
     const [search, setSearch] = useState("");
     const [activeTab, setActiveTab] = useState("explorer");
-    
+
     const { appearance } = useAppearance();
 
     // Auto-switch to query tab when query mode is enabled
@@ -92,15 +73,19 @@ const PostgresMasterSidebar = ({
     }, [isQueryMode]);
 
     // Handle tab changes and auto-enable query mode
-    const handleTabChange = useCallback((tab: string) => {
-        setActiveTab(tab);
-        if (tab === "query" && !isQueryMode) {
-            setQueryMode(true);
-        }
-    }, [isQueryMode, setQueryMode]);
-    
+    const handleTabChange = useCallback(
+        (tab: string) => {
+            setActiveTab(tab);
+            if (tab === "query" && !isQueryMode) {
+                setQueryMode(true);
+            }
+        },
+        [isQueryMode, setQueryMode],
+    );
+
     const filteredTables = tables.filter((table) => {
-        const regex = new RegExp(search, "i");
+        const escapedSearch = search.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+        const regex = new RegExp(escapedSearch, "i");
         return regex.test(table.table_name);
     });
 
@@ -169,7 +154,7 @@ const PostgresMasterSidebar = ({
                 <div
                     className="rounded-md border bg-background p-2 font-mono text-sm flex-1 min-h-0"
                     onKeyDown={(e) => {
-                        if (e.ctrlKey && e.code === "Enter" && queryString?.trim()) {
+                        if ((e.ctrlKey || e.metaKey) && e.code === "Enter" && queryString?.trim()) {
                             executeQuery(connection);
                         }
                     }}
@@ -298,21 +283,17 @@ const PostgresMasterSidebar = ({
                         <TooltipContent>Open sidebar</TooltipContent>
                     </Tooltip>
                     <SheetContent side="left" className="w-80 p-4">
-                        <div className="flex flex-col gap-4 overflow-y-auto pt-10 h-full">
-                            {sidebarContent}
-                        </div>
+                        <div className="flex flex-col gap-4 overflow-y-auto pt-10 h-full">{sidebarContent}</div>
                     </SheetContent>
                 </Sheet>
             </div>
 
             {/* Desktop view */}
             <div className="hidden h-full md:block">
-                <div className="flex h-full w-76 flex-col gap-4 overflow-y-auto border-r p-4">
-                    {sidebarContent}
-                </div>
+                <div className="flex h-full w-76 flex-col gap-4 overflow-y-auto border-r p-4">{sidebarContent}</div>
             </div>
         </>
     );
 };
 
-export default PostgresMasterSidebar; 
+export default PostgresMasterSidebar;
