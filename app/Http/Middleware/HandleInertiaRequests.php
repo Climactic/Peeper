@@ -47,15 +47,11 @@ class HandleInertiaRequests extends Middleware
             'auth' => [
                 'user' => $request->user(),
             ],
-            'ziggy' => fn (): array => [
+            'ziggy' => fn(): array => [
                 ...(new Ziggy)->toArray(),
                 'location' => $request->url(),
             ],
-            'workspaces' => [
-                'enabled' => config('workspace.enabled'),
-                'all' => $this->getUserWorkspacesData($request->user())[0],
-                'current' => $this->getUserWorkspacesData($request->user())[1],
-            ],
+            'workspaces' => $this->getUserWorkspacesData($request->user()),
         ];
     }
 
@@ -69,7 +65,7 @@ class HandleInertiaRequests extends Middleware
             ->with('workspace')
             ->get();
 
-        $workspaces = $memberships->map(fn ($membership) => [
+        $workspaces = $memberships->map(fn($membership) => [
             'id' => $membership->workspace->id,
             'name' => $membership->workspace->name,
             'role' => $membership->role,
@@ -88,6 +84,10 @@ class HandleInertiaRequests extends Middleware
             ];
         }
 
-        return [$workspaces, $currentWorkspace];
+        return [
+            'enabled' => config('workspace.enabled'),
+            'all' => $workspaces,
+            'current' => $currentWorkspace,
+        ];
     }
 }

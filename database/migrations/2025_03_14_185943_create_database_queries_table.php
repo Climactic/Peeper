@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('database_queries', function (Blueprint $table) {
             $table->ulid('id')->primary();
             $table->foreignUlid('database_connection_id')->constrained('database_connections')->cascadeOnDelete();
-            $table->string('query');
+            $table->longText('query');
             $table->enum('executor', ['user', 'system']);
             $table->foreignUlid('executor_id')->nullable()->constrained('users')->cascadeOnDelete();
             $table->json('parameters')->nullable()->comment('JSON encoded parameters required for the query');

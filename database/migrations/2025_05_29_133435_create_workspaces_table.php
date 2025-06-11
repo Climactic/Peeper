@@ -63,15 +63,17 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('workspaces');
-        Schema::dropIfExists('workspace_memberships');
-        Schema::dropIfExists('roles');
         Schema::table('users', function (Blueprint $table) {
+            $table->dropForeign(['current_workspace_id']);
             $table->dropColumn('current_workspace_id');
         });
         Schema::table('database_connections', function (Blueprint $table) {
+            $table->dropForeign(['workspace_id']);
             $table->dropColumn('workspace_id');
-            $table->foreignUlid('user_id')->constrained('users');
+            $table->foreignUlid('user_id')->constrained('users')->cascadeOnDelete();
         });
+        Schema::dropIfExists('workspace_memberships');
+        Schema::dropIfExists('workspaces');
+        Schema::dropIfExists('roles');
     }
 };

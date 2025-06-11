@@ -18,7 +18,7 @@ trait HasWorkspaceScope
 
         static::creating(function (Model $model) {
             if ($workspaceId = Context::get('workspace_id')) {
-                $model->workspace_id = $workspaceId;
+                $model->workspace_id ??= $workspaceId;
             }
         });
     }

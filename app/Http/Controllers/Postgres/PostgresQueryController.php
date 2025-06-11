@@ -134,7 +134,7 @@ class PostgresQueryController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'error' => 'An error occurred: '.$e->getMessage(),
+                'error' => 'An error occurred: ' . $e->getMessage(),
                 'query' => $request->input('query'),
             ], 500);
         }

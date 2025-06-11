@@ -25,7 +25,9 @@ class WorkspaceMiddleware
                 $workspaceId = $request->input('switch_workspace');
 
                 // Verify user belongs to this workspace
-                $workspaceBelongsToUser = $user->workspaces()->where('workspace_id', $workspaceId)->exists();
+                $workspaceBelongsToUser = $user->workspaceMemberships()
+                    ->where('workspace_memberships.workspace_id', $workspaceId)
+                    ->exists();
 
                 if ($workspaceBelongsToUser) {
                     $user->current_workspace_id = $workspaceId;
