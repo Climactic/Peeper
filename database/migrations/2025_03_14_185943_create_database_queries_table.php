@@ -19,6 +19,7 @@ return new class extends Migration
             $table->foreignUlid('executor_id')->nullable()->constrained('users')->cascadeOnDelete();
             $table->json('parameters')->nullable()->comment('JSON encoded parameters required for the query');
             $table->timestamps();
+            $table->index('created_at');
         });
     }
 

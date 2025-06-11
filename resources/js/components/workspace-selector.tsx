@@ -49,7 +49,7 @@ export function TeamSelector({ workspaces }: { workspaces: SharedData["workspace
                             <DropdownMenuItem key={workspace.id}>
                                 <Link
                                     href="?"
-                                    data={{ switch_team: workspace.id }}
+                                    data={{ switch_workspace: workspace.id }}
                                     className="flex w-full items-center justify-between"
                                     preserveScroll
                                 >
