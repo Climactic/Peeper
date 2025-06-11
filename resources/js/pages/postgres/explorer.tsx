@@ -1,7 +1,5 @@
-import QueryToggleButton from "@/components/database/query-toggle-button";
 import PostgresContent from "@/components/postgres/postgres-content";
-import PostgresQuerySidebar from "@/components/postgres/postgres-query-sidebar";
-import PostgresSidebar from "@/components/postgres/postgres-sidebar";
+import PostgresMasterSidebar from "@/components/postgres/postgres-master-sidebar";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { PostgresContextProvider, usePostgresStore } from "@/contexts/postgres-context";
 import AppLayout from "@/layouts/app-layout";
@@ -70,7 +68,6 @@ const ExplorerContent = ({ connection, breadcrumbs }: ExplorerContentProps) => {
     const queryColumns = usePostgresStore((state) => state.queryColumns);
 
     // Get actions from store
-    const setQueryMode = usePostgresStore((state) => state.setQueryMode);
     const setPagination = usePostgresStore((state) => state.setPagination);
     const fetchSchemas = usePostgresStore((state) => state.fetchSchemas);
     const fetchTables = usePostgresStore((state) => state.fetchTables);
@@ -92,14 +89,14 @@ const ExplorerContent = ({ connection, breadcrumbs }: ExplorerContentProps) => {
 
     // Watch for changes to selectedSchema and fetch tables when it changes
     useEffect(() => {
-        if (selectedSchema && !isQueryMode) {
+        if (selectedSchema) {
             fetchTables(connection);
 
             // Reset filters and sorting when changing schema
             setFilters([]);
             setSorting([]);
         }
-    }, [selectedSchema, connection, fetchTables, isQueryMode, setFilters, setSorting]);
+    }, [selectedSchema, connection, fetchTables, setFilters, setSorting]);
 
     // Reset filters and sorting when changing to query mode
     useEffect(() => {
@@ -131,26 +128,33 @@ const ExplorerContent = ({ connection, breadcrumbs }: ExplorerContentProps) => {
         storeRefreshTableData(connection);
     }, [connection, storeRefreshTableData]);
 
-    const handleQueryModeToggle = useCallback(() => {
-        setQueryMode(!isQueryMode);
-    }, [isQueryMode, setQueryMode]);
+    const handlePaginationChange = useCallback((newPagination: { page: number; perPage: number; total: number }) => {
+        const currentPagination = pagination;
+        setPagination(newPagination);
+        
+        // If page changed, refresh table data to log the query and update history
+        if (newPagination.page !== currentPagination.page || newPagination.perPage !== currentPagination.perPage) {
+            setTimeout(() => {
+                storeRefreshTableData(connection);
+            }, 0);
+        }
+    }, [pagination, setPagination, connection, storeRefreshTableData]);
 
     return (
-        <AppLayout breadcrumbs={breadcrumbs} actions={<QueryToggleButton isQueryMode={isQueryMode} onToggle={handleQueryModeToggle} />}>
+        <AppLayout breadcrumbs={breadcrumbs}>
             <Head title={connection.name} />
             <div className="flex h-[calc(100vh-4rem)]">
-                {/* Sidebar for schema and tables - hidden in query mode */}
-                {!isQueryMode && (
-                    <PostgresSidebar
-                        loading={loading}
-                        selectedSchema={selectedSchema}
-                        schemas={schemas}
-                        tables={tables}
-                        selectedTable={selectedTable}
-                        onSchemaSelect={handleSchemaSelect}
-                        onTableSelect={handleTableSelect}
-                    />
-                )}
+                {/* Master Sidebar for both explorer and query modes */}
+                <PostgresMasterSidebar
+                    connection={connection}
+                    loading={loading}
+                    selectedSchema={selectedSchema}
+                    schemas={schemas}
+                    tables={tables}
+                    selectedTable={selectedTable}
+                    onSchemaSelect={handleSchemaSelect}
+                    onTableSelect={handleTableSelect}
+                />
 
                 {/* Main content area for exploring the table or query results */}
                 <PostgresContent
@@ -164,16 +168,13 @@ const ExplorerContent = ({ connection, breadcrumbs }: ExplorerContentProps) => {
                     columns={columns}
                     tableData={tableData}
                     pagination={pagination}
-                    setPagination={setPagination}
+                    setPagination={handlePaginationChange}
                     connectionId={connection.id}
                     database={connection.database}
                     selectedSchema={selectedSchema}
                     refreshTableData={refreshTableData}
                     connection={connection}
                 />
-
-                {/* Query sidebar - only visible in query mode */}
-                <PostgresQuerySidebar connection={connection} />
             </div>
         </AppLayout>
     );

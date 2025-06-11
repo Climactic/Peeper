@@ -55,12 +55,12 @@ const PostgresContent = ({
     connection,
 }: PostgresContentProps) => {
     return (
-        <div className={cn("flex-1 overflow-auto", isQueryMode && "ml-0")}>
+        <div className={cn("flex-1 overflow-auto")}>
             {/* Display query error or regular error */}
             {queryError ? <SqlErrorDisplay errorMessage={queryError} /> : <ErrorDisplay errorMessage={errorMessage} />}
 
-            {/* In query mode, show query results if available */}
-            {isQueryMode ? (
+            {/* Show query results if available and in query mode, otherwise show table view */}
+            {isQueryMode && queryResults ? (
                 <QueryResultsDisplay
                     queryResults={queryResults}
                     queryColumns={queryColumns}

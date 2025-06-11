@@ -379,6 +379,8 @@ export const postgresStore = create<PostgresStoreState>((set, get) => ({
                 ),
             ]);
 
+            const { isQueryMode } = get();
+
             set({ columns: columnsResponse.data });
 
             if (dataResponse.data && Array.isArray(dataResponse.data.data)) {
@@ -416,6 +418,14 @@ export const postgresStore = create<PostgresStoreState>((set, get) => ({
                     }));
                 }
             }
+
+            // If we're in query mode and filters or sorting were applied, refresh query history
+            if (isQueryMode && (filters.length > 0 || sorting.length > 0)) {
+                // Use a small delay to ensure the backend has time to log the query
+                setTimeout(() => {
+                    get().fetchQueryHistory(connection);
+                }, 200);
+            }
         } catch (err) {
             console.error("Error fetching table data:", err);
             const axiosError = err as AxiosError<{ message: string }>;
@@ -447,6 +457,12 @@ export const postgresStore = create<PostgresStoreState>((set, get) => ({
         const { selectedTable } = get();
         if (selectedTable) {
             await get().fetchTableData(connection, selectedTable);
+            
+            // If we're in query mode, refresh the query history to show any new filter/sort queries
+            const { isQueryMode } = get();
+            if (isQueryMode) {
+                await get().fetchQueryHistory(connection);
+            }
         }
     },
 }));

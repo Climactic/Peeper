@@ -31,7 +31,7 @@ const SchemaSelector = ({ loading, selectedSchema, schemas, onSchemaSelect }: Sc
                     <FolderIcon className="mr-2 h-4 w-4" /> {selectedSchema ?? "Select Schema"}
                 </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent className="w-55">
+            <DropdownMenuContent className="w-68">
                 <ScrollArea className="max-h-[300px] overflow-y-auto">
                     {schemas.map((schema) => (
                         <DropdownMenuItem key={schema.schema_name} onClick={() => onSchemaSelect(schema.schema_name)}>

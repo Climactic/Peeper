@@ -37,8 +37,8 @@
         "@radix-ui/react-toggle": "^1.1.9",
         "@radix-ui/react-toggle-group": "^1.1.10",
         "@radix-ui/react-tooltip": "^1.2.7",
-        "@tailwindcss/vite": "^4.1.8",
-        "@types/react": "^19.1.7",
+        "@tailwindcss/vite": "^4.1.9",
+        "@types/react": "^19.1.8",
         "@types/react-dom": "^19.1.6",
         "@vitejs/plugin-react": "^4.5.2",
         "axios": "^1.9.0",
@@ -59,17 +59,17 @@
         "react-resizable-panels": "^2.1.9",
         "sonner": "^2.0.5",
         "tailwind-merge": "^3.3.1",
-        "tailwindcss": "^4.1.8",
+        "tailwindcss": "^4.1.9",
         "tailwindcss-animate": "^1.0.7",
         "typescript": "^5.8.3",
         "vaul": "^1.1.2",
         "vite": "^6.3.5",
-        "zod": "^3.25.61",
+        "zod": "^3.25.62",
         "zustand": "^5.0.5"
     },
     "optionalDependencies": {
         "@rollup/rollup-linux-x64-gnu": "4.9.5",
-        "@tailwindcss/oxide-linux-x64-gnu": "^4.1.8",
+        "@tailwindcss/oxide-linux-x64-gnu": "^4.1.9",
         "lightningcss-linux-x64-gnu": "^1.30.1"
     }
 }
