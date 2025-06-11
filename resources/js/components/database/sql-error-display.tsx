@@ -37,7 +37,7 @@ const SqlErrorDisplay = ({ errorMessage }: SqlErrorDisplayProps) => {
                     <div className="text-sm font-medium whitespace-pre-wrap">{mainError}</div>
 
                     {details.length > 0 && (
-                        <div className="bg-primary/10 mt-2 rounded p-2 font-mono text-xs whitespace-pre-wrap text-gray-200">
+                        <div className="bg-primary/10 mt-2 rounded p-2 font-mono text-xs whitespace-pre-wrap text-gray-900 dark:text-gray-200">
                             {details.map((detail, i) => (
                                 <div key={i} className="mt-1 first:mt-0">
                                     {detail}

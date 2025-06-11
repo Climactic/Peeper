@@ -59,8 +59,12 @@ class HandleInertiaRequests extends Middleware
         ];
     }
 
-    private function getUserWorkspacesData(User $user): array
+    private function getUserWorkspacesData(?User $user): array
     {
+        if (!$user) {
+            return [[], null];
+        }
+
         $memberships = $user->workspaceMemberships()
             ->with('workspace')
             ->get();

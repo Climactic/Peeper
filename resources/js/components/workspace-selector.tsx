@@ -1,10 +1,10 @@
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar } from '@/components/ui/sidebar';
-import { SharedData } from '@/types';
-import { Link } from '@inertiajs/react';
-import { CheckIcon, ChevronsUpDown, Users } from 'lucide-react';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar } from "@/components/ui/sidebar";
+import { SharedData } from "@/types";
+import { Link } from "@inertiajs/react";
+import { CheckIcon, ChevronsUpDown, Users } from "lucide-react";
 
-export function TeamSelector({ workspaces }: { workspaces: SharedData['workspaces'] }) {
+export function TeamSelector({ workspaces }: { workspaces: SharedData["workspaces"] }) {
     const { state } = useSidebar();
 
     const hasWorkspaces = workspaces.all.length > 0;
@@ -14,7 +14,7 @@ export function TeamSelector({ workspaces }: { workspaces: SharedData['workspace
         return null;
     }
 
-    const isCollapsed = state === 'collapsed';
+    const isCollapsed = state === "collapsed";
 
     return (
         <SidebarMenu>
@@ -34,14 +34,14 @@ export function TeamSelector({ workspaces }: { workspaces: SharedData['workspace
                                 )}
                             </div>
                             <div className="grid flex-1 text-left text-sm leading-tight">
-                                <span className="truncate font-medium">{currentWorkspace?.name || 'Select a workspace'}</span>
+                                <span className="truncate font-medium">{currentWorkspace?.name || "Select a workspace"}</span>
                             </div>
                             <ChevronsUpDown className="ml-auto size-4" />
                         </SidebarMenuButton>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent
                         className="max-h-48 w-[--radix-dropdown-menu-trigger-width] min-w-56 overflow-auto rounded-lg"
-                        side={isCollapsed ? 'right' : 'bottom'}
+                        side={isCollapsed ? "right" : "bottom"}
                         align="start"
                         sideOffset={4}
                     >

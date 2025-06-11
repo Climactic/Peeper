@@ -62,7 +62,7 @@ class PostgresQueryController extends Controller
         ]);
 
         try {
-            $connection = DatabaseConnection::where('ulid', $request->input('connection_id'))->firstOrFail();
+            $connection = DatabaseConnection::where('id', $request->input('connection_id'))->firstOrFail();
 
             // Ensure the user can only access their own connections
             if ($connection->workspace_id !== $request->user()->current_workspace_id) {

@@ -46,6 +46,9 @@ return new class extends Migration
 
         Schema::table('database_connections', function (Blueprint $table) {
             $table->foreignUlid('workspace_id')->constrained('workspaces')->cascadeOnDelete();
+            if (Schema::hasColumn('database_connections', 'user_id')) {
+                $table->dropColumn('user_id');
+            }
         });
 
         DB::table('roles')->insert([
@@ -65,6 +68,10 @@ return new class extends Migration
         Schema::dropIfExists('roles');
         Schema::table('users', function (Blueprint $table) {
             $table->dropColumn('current_workspace_id');
+        });
+        Schema::table('database_connections', function (Blueprint $table) {
+            $table->dropColumn('workspace_id');
+            $table->foreignUlid('user_id')->constrained('users');
         });
     }
 };
