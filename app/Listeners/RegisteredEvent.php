@@ -28,15 +28,15 @@ class RegisteredEvent
 
         DB::transaction(function () use ($user) {
             $workspace = Workspace::create([
-                'name'  => "{$user->name}'s Workspace",
-                'slug'  => Str::slug("{$user->name} Workspace") . Str::random(5),
+                'name' => "{$user->name}'s Workspace",
+                'slug' => Str::slug("{$user->name} Workspace").Str::random(5),
                 'owner_id' => $user->id,
             ]);
 
             WorkspaceMembership::create([
                 'workspace_id' => $workspace->id,
-                'user_id'      => $user->id,
-                'role'         => 'owner',
+                'user_id' => $user->id,
+                'role' => 'owner',
             ]);
 
             $user->forceFill(['current_workspace_id' => $workspace->id])->save();
