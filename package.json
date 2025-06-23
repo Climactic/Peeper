@@ -12,12 +12,12 @@
     },
     "devDependencies": {
         "@biomejs/biome": "1.9.4",
-        "@types/node": "^22.15.31"
+        "@types/node": "^22.15.32"
     },
     "dependencies": {
         "@headlessui/react": "^2.2.4",
         "@hookform/resolvers": "^5.1.1",
-        "@inertiajs/react": "^2.0.12",
+        "@inertiajs/react": "^2.0.13",
         "@monaco-editor/react": "^4.7.0",
         "@radix-ui/react-alert-dialog": "^1.1.14",
         "@radix-ui/react-avatar": "^1.1.10",
@@ -54,7 +54,7 @@
         "react": "^19.1.0",
         "react-day-picker": "9.7.0",
         "react-dom": "^19.1.0",
-        "react-hook-form": "^7.57.0",
+        "react-hook-form": "^7.58.1",
         "react-icons": "^5.5.0",
         "react-resizable-panels": "^3.0.3",
         "sonner": "^2.0.5",
@@ -64,7 +64,7 @@
         "typescript": "^5.8.3",
         "vaul": "^1.1.2",
         "vite": "^6.3.5",
-        "zod": "^3.25.62",
+        "zod": "^3.25.67",
         "zustand": "^5.0.5"
     },
     "optionalDependencies": {
