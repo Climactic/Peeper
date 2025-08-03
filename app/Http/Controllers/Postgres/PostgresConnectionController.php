@@ -112,6 +112,8 @@ class PostgresConnectionController extends Controller
      */
     public function store(Request $request)
     {
+        // todo: add validation for project_id
+
         $request->validate([
             'name' => 'required|string|max:255',
             'host' => 'required|string|max:255',
@@ -119,6 +121,7 @@ class PostgresConnectionController extends Controller
             'username' => 'required|string|max:255',
             'password' => 'required|string|max:255',
             'database' => 'required|string|max:255',
+            'project_id' => 'required|string|max:255',
         ]);
 
         // Ensure the connection is created for the authenticated user only
@@ -130,7 +133,7 @@ class PostgresConnectionController extends Controller
             'password' => $request->input('password'),
             'database' => $request->input('database'),
             'type' => 'postgres',
-            'workspace_id' => $request->user()->current_workspace_id,
+            'project_id' => $request->input('project_id'),
         ]);
 
         return redirect()->route('postgres.explore', $connection->id)
@@ -145,9 +148,6 @@ class PostgresConnectionController extends Controller
     public function explore(DatabaseConnection $connection, Request $request)
     {
         // Ensure the user can only access their own connections
-        if ($connection->workspace_id !== $request->user()->current_workspace_id) {
-            abort(403, 'Unauthorized action.');
-        }
 
         try {
             // Update metadata before displaying explorer
@@ -174,9 +174,9 @@ class PostgresConnectionController extends Controller
     public function getSchemas(Request $request, DatabaseConnection $connection, $database)
     {
         // Ensure the user can only access their own connections
-        if ($connection->workspace_id !== $request->user()->current_workspace_id) {
-            return response()->json(['message' => 'Unauthorized action.'], 403);
-        }
+        // if ($connection->workspace_id !== $request->user()->current_workspace_id) {
+        //     return response()->json(['message' => 'Unauthorized action.'], 403);
+        // }
 
         try {
             $schemas = $this->postgresService->getSchemas($connection, $database);
@@ -196,9 +196,9 @@ class PostgresConnectionController extends Controller
     public function getTables(Request $request, DatabaseConnection $connection, $database)
     {
         // Ensure the user can only access their own connections
-        if ($connection->workspace_id !== $request->user()->current_workspace_id) {
-            return response()->json(['message' => 'Unauthorized action.'], 403);
-        }
+        // if ($connection->workspace_id !== $request->user()->current_workspace_id) {
+        //     return response()->json(['message' => 'Unauthorized action.'], 403);
+        // }
 
         try {
             $tables = $this->postgresService->getTables($connection, $database);
@@ -219,9 +219,9 @@ class PostgresConnectionController extends Controller
     public function getColumns(Request $request, DatabaseConnection $connection, $database, $table)
     {
         // Ensure the user can only access their own connections
-        if ($connection->workspace_id !== $request->user()->current_workspace_id) {
-            return response()->json(['message' => 'Unauthorized action.'], 403);
-        }
+        // if ($connection->workspace_id !== $request->user()->current_workspace_id) {
+        //     return response()->json(['message' => 'Unauthorized action.'], 403);
+        // }
 
         $schema = $request->query('schema', 'public');
 
@@ -244,9 +244,9 @@ class PostgresConnectionController extends Controller
     public function getTableData(Request $request, DatabaseConnection $connection, $database, $table)
     {
         // Ensure the user can only access their own connections
-        if ($connection->workspace_id !== $request->user()->current_workspace_id) {
-            return response()->json(['message' => 'Unauthorized action.'], 403);
-        }
+        // if ($connection->workspace_id !== $request->user()->current_workspace_id) {
+        //     return response()->json(['message' => 'Unauthorized action.'], 403);
+        // }
 
         $page = $request->get('page', 1);
         $perPage = $request->get('perPage', 20);
@@ -286,9 +286,9 @@ class PostgresConnectionController extends Controller
     public function insertRow(Request $request, DatabaseConnection $connection)
     {
         // Ensure the user can only access their own connections
-        if ($connection->workspace_id !== $request->user()->current_workspace_id) {
-            return response()->json(['message' => 'Unauthorized action.'], 403);
-        }
+        // if ($connection->workspace_id !== $request->user()->current_workspace_id) {
+        //     return response()->json(['message' => 'Unauthorized action.'], 403);
+        // }
 
         $request->validate([
             'database' => 'required|string',

@@ -2,9 +2,9 @@ import { NavFooter } from "@/components/nav-footer";
 import { NavMain } from "@/components/nav-main";
 import { NavUser } from "@/components/nav-user";
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from "@/components/ui/sidebar";
-import { type NavItem, SharedData } from "@/types";
+import { type NavItem, ProjectProps, SharedData } from "@/types";
 import { Link, usePage } from "@inertiajs/react";
-import { BookOpen, Folder, HeartIcon, LayoutGrid, Settings } from "lucide-react";
+import { BookOpen, Folder, FolderIcon, HeartIcon, LayoutGrid, Settings } from "lucide-react";
 import { SiPostgresql } from "react-icons/si";
 import AppLogo from "./app-logo";
 import If from "./if";
@@ -21,12 +21,12 @@ const mainNavItems: NavItem[] = [
     //     href: "/settings/workspace",
     //     icon: Settings,
     // },
-    {
-        title: "Postgres",
-        href: "/postgres",
-        icon: SiPostgresql,
-        group: "Database",
-    },
+    // {
+    //     title: "Postgres",
+    //     href: "/postgres",
+    //     icon: SiPostgresql,
+    //     group: "Database",
+    // },
 ];
 
 const footerNavItems: NavItem[] = [
@@ -50,6 +50,14 @@ const footerNavItems: NavItem[] = [
 export function AppSidebar() {
     const { workspaces } = usePage<SharedData>().props;
 
+    const projects =
+        workspaces.current?.projects?.map((project) => ({
+            title: project.name,
+            href: route("projects.show", { project: project.id }),
+            icon: FolderIcon,
+            group: "Projects",
+        })) ?? [];
+
     return (
         <Sidebar collapsible="icon" variant="inset">
             <SidebarHeader>
@@ -69,7 +77,7 @@ export function AppSidebar() {
             </SidebarHeader>
 
             <SidebarContent>
-                <NavMain items={mainNavItems} />
+                <NavMain items={[...mainNavItems, ...projects]} />
             </SidebarContent>
 
             <SidebarFooter>

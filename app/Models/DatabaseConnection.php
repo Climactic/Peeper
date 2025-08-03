@@ -2,14 +2,14 @@
 
 namespace App\Models;
 
+use App\Concerns\HasTeamScope;
 use App\Concerns\HasUlid;
-use App\Concerns\HasWorkspaceScope;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class DatabaseConnection extends Model
 {
-    use HasUlid, HasWorkspaceScope;
+    use HasTeamScope, HasUlid;
 
     protected $fillable = [
         'name',
@@ -24,7 +24,7 @@ class DatabaseConnection extends Model
         'sslkey',
         'sslrootcert',
         'metadata',
-        'workspace_id',
+        'project_id',
     ];
 
     protected $casts = [
@@ -46,8 +46,8 @@ class DatabaseConnection extends Model
         'sslrootcert',
     ];
 
-    public function workspace(): BelongsTo
+    public function project(): BelongsTo
     {
-        return $this->belongsTo(Workspace::class);
+        return $this->belongsTo(Project::class);
     }
 }

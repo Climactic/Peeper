@@ -25,6 +25,7 @@ return new class extends Migration
             $table->string('sslkey')->nullable();
             $table->string('sslrootcert')->nullable();
             $table->json('metadata')->nullable();
+            $table->foreignUlid('project_id')->constrained('projects')->cascadeOnDelete()->index();
             $table->timestamps();
         });
     }

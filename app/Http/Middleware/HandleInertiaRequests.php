@@ -52,6 +52,7 @@ class HandleInertiaRequests extends Middleware
                 'location' => $request->url(),
             ],
             'workspaces' => $this->getUserWorkspacesData($request->user()),
+            'currentProject' => $this->getCurrentProjectData($request, $request->user()),
         ];
     }
 
@@ -70,6 +71,7 @@ class HandleInertiaRequests extends Middleware
             'name' => $membership->workspace->name,
             'role' => $membership->role,
             'logo' => $membership->workspace->logo,
+            'projects' => $membership->workspace->projects,
         ])->toArray();
 
         $currentWorkspace = null;
@@ -81,6 +83,7 @@ class HandleInertiaRequests extends Middleware
                 'name' => $user->currentWorkspace->name,
                 'role' => $currentMembership ? $currentMembership->role : null,
                 'logo' => $user->currentWorkspace->logo,
+                'projects' => $user->currentWorkspace->projects,
             ];
         }
 
@@ -88,6 +91,20 @@ class HandleInertiaRequests extends Middleware
             'enabled' => config('workspace.enabled'),
             'all' => $workspaces,
             'current' => $currentWorkspace,
+        ];
+    }
+
+    private function getCurrentProjectData(Request $request, ?User $user): ?array
+    {
+        if (! $user || ! $request->routeIs('projects.show')) {
+            return null;
+        }
+
+        $project = $request->route('project');
+
+        return [
+            'id' => $project->id,
+            'name' => $project->name,
         ];
     }
 }

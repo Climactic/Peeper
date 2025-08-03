@@ -1,5 +1,6 @@
 import { LucideIcon } from "lucide-react";
 import type { Config } from "ziggy-js";
+import { DatabaseConnection } from "./database";
 
 export interface Auth {
     user: User;
@@ -28,6 +29,7 @@ export interface Workspace {
     name: string;
     logo?: string;
     role: string;
+    projects?: Project[];
 }
 
 export interface SharedData {
@@ -40,7 +42,7 @@ export interface SharedData {
 }
 
 export interface User {
-    id: number;
+    id: string;
     name: string;
     email: string;
     avatar?: string;
@@ -48,4 +50,16 @@ export interface User {
     created_at: string;
     updated_at: string;
     [key: string]: unknown; // This allows for additional properties...
+}
+
+export interface Project {
+    id: string;
+    name: string;
+    created_at: string;
+    updated_at: string;
+}
+
+export interface ProjectProps extends SharedData {
+    project: Project;
+    databaseConnections: DatabaseConnection[];
 }

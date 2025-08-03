@@ -1,18 +1,21 @@
 <?php
 
+use App\Http\Controllers\Dashboard\DashboardController;
 use App\Http\Controllers\Postgres\PostgresConnectionController;
 use App\Http\Controllers\Postgres\PostgresQueryController;
+use App\Http\Controllers\Projects\ProjectController;
 use Illuminate\Support\Facades\Route;
-use Inertia\Inertia;
 
 Route::get('/', function () {
     return redirect()->route('dashboard');
 })->name('home');
 
 Route::middleware(['auth', 'verified'])->group(function () {
-    Route::get('dashboard', function () {
-        return Inertia::render('dashboard');
-    })->name('dashboard');
+    Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
+
+    // Projects Routes
+    Route::post('/projects', [ProjectController::class, 'store'])->name('projects.store');
+    Route::get('/projects/{project}', [ProjectController::class, 'show'])->name('projects.show');
 
     // Postgres Routes
     Route::get('/postgres', [PostgresConnectionController::class, 'index'])->name('postgres.index');

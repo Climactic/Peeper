@@ -13,7 +13,7 @@ interface TestConnectionResponse {
     error?: string;
 }
 
-const CreatePostgresConnection = ({ trigger }: { trigger: React.ReactNode }) => {
+const CreatePostgresConnection = ({ trigger, projectId }: { trigger: React.ReactNode; projectId: string }) => {
     const [isOpen, setIsOpen] = useState(false);
     const [connectionString, setConnectionString] = useState("");
     const [connectionStringError, setConnectionStringError] = useState("");
@@ -27,6 +27,7 @@ const CreatePostgresConnection = ({ trigger }: { trigger: React.ReactNode }) => 
         username: "",
         password: "",
         database: "",
+        project_id: projectId,
     });
 
     useEffect(() => {
@@ -55,13 +56,14 @@ const CreatePostgresConnection = ({ trigger }: { trigger: React.ReactNode }) => 
                 username: url.username || "",
                 password: url.password || "",
                 database: database,
+                project_id: projectId,
             });
 
             setConnectionStringError("");
         } catch {
             setConnectionStringError("Invalid connection string format. Expected: postgresql://username:password@host:port/database");
         }
-    }, [connectionString, setData]);
+    }, [connectionString, setData, projectId]);
 
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -110,11 +112,13 @@ const CreatePostgresConnection = ({ trigger }: { trigger: React.ReactNode }) => 
                 </TabsList>
 
                 <TabsContent value="connection-string" className="py-4">
-                    <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
+                    <form className="flex flex-col gap-4" onSubmit={handleSubmit} autoComplete="off">
                         <div className="flex flex-col gap-2">
                             <Label>Connection String</Label>
                             <Input
                                 type="text"
+                                autoComplete="connection-string"
+                                autoCorrect="off"
                                 placeholder="postgresql://username:password@host:port/database"
                                 value={connectionString}
                                 onChange={(e) => setConnectionString(e.target.value)}
@@ -180,6 +184,7 @@ const CreatePostgresConnection = ({ trigger }: { trigger: React.ReactNode }) => 
                             <Input
                                 type="text"
                                 autoComplete="off"
+                                autoCorrect="off"
                                 name="username"
                                 value={data.username}
                                 onChange={(e) => setData("username", e.target.value)}
@@ -192,6 +197,8 @@ const CreatePostgresConnection = ({ trigger }: { trigger: React.ReactNode }) => 
                             <Label>Password</Label>
                             <Input
                                 type="password"
+                                autoComplete="off"
+                                autoCorrect="off"
                                 name="password"
                                 value={data.password}
                                 onChange={(e) => setData("password", e.target.value)}

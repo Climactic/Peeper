@@ -12,9 +12,10 @@ dayjs.extend(relativeTime);
 
 interface PostgresProps {
     connections: DatabaseConnection[];
+    projectId: string;
 }
 
-const Postgres = ({ connections }: PostgresProps) => {
+const Postgres = ({ connections, projectId }: PostgresProps) => {
     return (
         <AppLayout breadcrumbs={[{ title: "Postgres", href: route("postgres.index") }]}>
             <Head title="Postgres" />
@@ -33,6 +34,7 @@ const Postgres = ({ connections }: PostgresProps) => {
                                 <CardDescription>Add Connection</CardDescription>
                             </Card>
                         }
+                        projectId={projectId}
                     />
                 </div>
             </div>

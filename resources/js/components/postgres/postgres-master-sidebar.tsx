@@ -147,12 +147,12 @@ const PostgresMasterSidebar = ({
 
     // Query content
     const queryContent = (
-        <div className="flex max-h-[80vh] flex-col gap-4">
+        <div className="flex h-full flex-col gap-4">
             {/* SQL Editor Section */}
             <div className="flex flex-col gap-3 rounded-lg bg-card" style={{ height: "50%" }}>
                 <p className="text-sm font-medium text-gray-500 uppercase">SQL Editor</p>
                 <div
-                    className="rounded-md border bg-background p-2 font-mono text-sm flex-1 min-h-0"
+                    className="rounded-md border bg-background p-2 font-mono text-sm flex-1"
                     onKeyDown={(e) => {
                         if ((e.ctrlKey || e.metaKey) && e.code === "Enter" && queryString?.trim()) {
                             executeQuery(connection);
@@ -163,7 +163,7 @@ const PostgresMasterSidebar = ({
                         className="h-full"
                         height={"100%"}
                         value={queryString || ""}
-                        theme={appearance === "dark" ? "vs-dark" : "vs"}
+                        theme={appearance === "dark" || appearance === "system" ? "vs-dark" : "vs"}
                         onChange={(value) => setQueryString(value || "")}
                         options={{
                             minimap: { enabled: false },

@@ -11,8 +11,7 @@
         "types": "tsc --noEmit"
     },
     "devDependencies": {
-        "@biomejs/biome": "1.9.4",
-        "@types/node": "^22.15.31"
+        "@biomejs/biome": "1.9.4"
     },
     "dependencies": {
         "@headlessui/react": "^2.2.4",
@@ -41,6 +40,7 @@
         "@types/react": "^19.1.8",
         "@types/react-dom": "^19.1.6",
         "@vitejs/plugin-react": "^4.5.2",
+        "@xyflow/react": "^12.8.2",
         "axios": "^1.9.0",
         "class-variance-authority": "^0.7.1",
         "clsx": "^2.1.1",
@@ -57,11 +57,11 @@
         "react-hook-form": "^7.57.0",
         "react-icons": "^5.5.0",
         "react-resizable-panels": "^3.0.2",
+        "reactflow": "^11.11.4",
         "sonner": "^2.0.5",
         "tailwind-merge": "^3.3.1",
         "tailwindcss": "^4.1.9",
         "tailwindcss-animate": "^1.0.7",
-        "typescript": "^5.8.3",
         "vaul": "^1.1.2",
         "vite": "^6.3.5",
         "zod": "^3.25.62",

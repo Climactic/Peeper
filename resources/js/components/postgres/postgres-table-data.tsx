@@ -5,6 +5,7 @@ import PostgresFilters from "@/components/postgres/postgres-filters";
 import PostgresSort from "@/components/postgres/postgres-sort";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Table, TableBody, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { DatabaseConnection } from "@/types/database";
 import { TableRecord } from "@/types/postgres";
 import { CalendarIcon, CheckIcon, CodeIcon, HashIcon, KeyIcon, SigmaIcon, TableIcon, TextIcon } from "lucide-react";
@@ -102,25 +103,26 @@ const TableDataDisplay = ({
     };
 
     const getColumnIcon = (column: ColumnData) => {
-        const icons: ReactElement[] = [];
+        const icons: { icon: ReactElement; tooltip: string }[] = [];
+
         if (column.is_primary_key) {
-            icons.push(<KeyIcon className="text-primary size-3 rotate-45" />);
+            icons.push({ icon: <KeyIcon className="text-primary size-3 rotate-45" />, tooltip: "Primary Key" });
         }
         if (/^(text|character|varchar|char|citext)/.test(column.data_type)) {
-            icons.push(<TextIcon className="text-primary size-3" />);
+            icons.push({ icon: <TextIcon className="text-primary size-3" />, tooltip: "Text" });
         }
         if (/^(integer|bigint|smallint|numeric|decimal|float|double)/.test(column.data_type)) {
-            icons.push(<SigmaIcon className="text-primary size-3" />);
+            icons.push({ icon: <SigmaIcon className="text-primary size-3" />, tooltip: "Number" });
         }
         if (/^(boolean|bool)/.test(column.data_type)) {
-            icons.push(<CheckIcon className="text-primary size-3" />);
+            icons.push({ icon: <CheckIcon className="text-primary size-3" />, tooltip: "Boolean" });
         }
         if (/^(date|time|timestamp|interval)/.test(column.data_type)) {
-            icons.push(<CalendarIcon className="text-primary size-3" />);
+            icons.push({ icon: <CalendarIcon className="text-primary size-3" />, tooltip: "Date" });
         } else if (/^(json|jsonb)/.test(column.data_type)) {
-            icons.push(<CodeIcon className="text-primary size-3" />);
+            icons.push({ icon: <CodeIcon className="text-primary size-3" />, tooltip: "JSON" });
         } else if (/^(uuid|uuid-ossp)/.test(column.data_type)) {
-            icons.push(<HashIcon className="text-primary size-3" />);
+            icons.push({ icon: <HashIcon className="text-primary size-3" />, tooltip: "UUID" });
         }
 
         return icons;
@@ -141,16 +143,16 @@ const TableDataDisplay = ({
                         <>
                             <PostgresFilters columns={columns} connection={connection} />
                             <PostgresSort columns={columns} connection={connection} />
+                            <AddPostgresRow
+                                connectionId={connectionId}
+                                database={database}
+                                schema={schema}
+                                table={selectedTable}
+                                columns={columns}
+                                onSuccess={onRowAdded}
+                            />
                         </>
                     )}
-                    <AddPostgresRow
-                        connectionId={connectionId}
-                        database={database}
-                        schema={schema}
-                        table={selectedTable}
-                        columns={columns}
-                        onSuccess={onRowAdded}
-                    />
                 </div>
             </div>
             <div className="flex max-w-screen flex-col overflow-x-auto md:w-full">
@@ -162,7 +164,12 @@ const TableDataDisplay = ({
                                     {columns.map((column, index) => (
                                         <TableHead key={index} className="h-10">
                                             <div className="flex items-center gap-1 align-middle">
-                                                {getColumnIcon(column)}
+                                                {getColumnIcon(column).map((icon) => (
+                                                    <Tooltip key={icon.tooltip}>
+                                                        <TooltipTrigger>{icon.icon}</TooltipTrigger>
+                                                        <TooltipContent>{icon.tooltip}</TooltipContent>
+                                                    </Tooltip>
+                                                ))}
                                                 {column.column_name}
                                                 <span className="font-mono text-xs text-gray-500">({column.data_type})</span>
                                             </div>
